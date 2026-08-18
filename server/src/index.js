@@ -46,7 +46,14 @@ app.use('/api/admin', uploadRouter);
 const distDir = path.join(__dirname, '..', '..', 'client', 'dist');
 if (fs.existsSync(distDir)) {
   console.log(`[server] serving static frontend from ${distDir}`);
-  app.use(express.static(distDir, { maxAge: '1h' }));
+  app.use(express.static(distDir, {
+    maxAge: '1h',
+    setHeaders: (res, filePath) => {
+      // index.html must never be cached — it references hashed asset URLs,
+      // so stale index.html = stale app for visitors
+      if (filePath.endsWith('index.html')) res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }));
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
     res.sendFile(path.join(distDir, 'index.html'));

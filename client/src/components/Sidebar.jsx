@@ -4,24 +4,24 @@ import api from '../api/client.js';
 import Cover from './Cover.jsx';
 import { timeAgo } from '../utils/format.js';
 
-/** Sticky news sidebar: most read, tags, subscribe. */
+/** Sticky news sidebar: recent hot articles, tags, subscribe. */
 export default function Sidebar() {
-  const [most, setMost] = useState([]);
+  const [hot, setHot] = useState([]);
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
-    api.get('/posts', { params: { sort: 'views', limit: 5 } })
-      .then(r => setMost(r.data.items || [])).catch(() => {});
+    api.get('/posts', { params: { sort: 'hot', limit: 5 } })
+      .then(r => setHot(r.data.items || [])).catch(() => {});
     api.get('/tags').then(r => setTags((r.data || []).slice(0, 14))).catch(() => {});
   }, []);
 
   return (
     <aside className="side">
-      {most.length > 0 && (
+      {hot.length > 0 && (
         <div className="sbox">
-          <div className="bt">Most Read</div>
+          <div className="bt">Recent Hot Articles</div>
           <ol className="most">
-            {most.map((p, i) => (
+            {hot.map((p, i) => (
               <li key={p.id}>
                 <span className="no">{i + 1}</span>
                 <div>

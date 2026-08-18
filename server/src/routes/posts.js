@@ -8,9 +8,12 @@ const LIST_FIELDS = ['page', 'limit', 'category', 'tag', 'q', 'author', 'feature
 function buildListQuery(query) {
   const where = ["p.status = 'published'"];
   const params = [];
+  // "views": all-time most read; "hot": recency-weighted popularity
   const orderBy = query.sort === 'views'
     ? 'p.views DESC, p.published_at DESC'
-    : 'p.is_top DESC, p.published_at DESC';
+    : query.sort === 'hot'
+      ? "(p.views * 1.0 / (julianday('now') - julianday(COALESCE(p.published_at, p.created_at)) + 2)) DESC"
+      : 'p.is_top DESC, p.published_at DESC';
 
   if (query.category) {
     where.push('c.slug = ?');
