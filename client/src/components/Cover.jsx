@@ -5,8 +5,9 @@ import { gradientFor } from '../utils/format.js';
  * Cover image with graceful fallback:
  * - no cover → deterministic gradient + glyph
  * - broken remote image → gradient
+ * Set eager to skip lazy-loading (hero/article cover = LCP element).
  */
-export default function Cover({ src, label = '', glyph = '⌂', style, className = '' }) {
+export default function Cover({ src, label = '', glyph = '⌂', style, className = '', eager = false }) {
   const [failed, setFailed] = useState(false);
   const bg = gradientFor(label || String(src || ''));
   if (!src || failed) {
@@ -22,7 +23,8 @@ export default function Cover({ src, label = '', glyph = '⌂', style, className
       <img
         src={src}
         alt={label || 'cover'}
-        loading="lazy"
+        loading={eager ? 'eager' : 'lazy'}
+        fetchpriority={eager ? 'high' : 'auto'}
         onError={() => setFailed(true)}
       />
       {label && <span className="chip">{label}</span>}

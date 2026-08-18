@@ -27,7 +27,7 @@ function HeroSlider({ slides }) {
     <Link className="hero-main" to={`/post/${slides[idx].slug}`}>
       {slides.map((s, i) => (
         <div key={s.id} className={`slide${i === idx ? ' on' : ''}`}>
-          <Cover src={s.cover_image} label={s.category_name || ''} glyph="◇" />
+          <Cover src={s.cover_image} label={s.category_name || ''} glyph="◇" eager />
         </div>
       ))}
       <div className="meta">

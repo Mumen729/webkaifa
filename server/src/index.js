@@ -88,11 +88,13 @@ function buildSeoHead(seo) {
   out += `<title>${esc(t)}</title>\n`;
   if (d) out += `<meta name="description" content="${esc(d)}">\n`;
   out += `<meta property="og:site_name" content="${esc(seo.siteName || 'News')}">\n`;
+  out += `<meta property="og:locale" content="ms_MY">\n`;
   out += `<meta property="og:type" content="${seo.type || 'website'}">\n`;
   out += `<meta property="og:title" content="${esc(t)}">\n`;
   if (d) out += `<meta property="og:description" content="${esc(d)}">\n`;
   out += `<meta property="og:url" content="${esc(url)}">\n`;
   if (image) out += `<meta property="og:image" content="${esc(image)}">\n`;
+  out += `<meta name="twitter:card" content="${image ? 'summary_large_image' : 'summary'}">\n`;
   out += `<link rel="canonical" href="${esc(url)}">\n`;
   if (Object.keys(ld).length) {
     out += `<script type="application/ld+json">${JSON.stringify(ld)}</script>\n`;

@@ -59,7 +59,7 @@ export default function PostPage() {
               </div>
             </div>
 
-            <Cover src={post.cover_image} label={post.category_name || ''} glyph="◇"
+            <Cover src={post.cover_image} label={post.category_name || ''} glyph="◇" eager
               className="article-cover" style={{ height: 440 }} />
 
             <MarkdownView md={bodyMd} html={bodyHtml} />
