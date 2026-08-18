@@ -4,10 +4,10 @@ import { db } from '../db.js';
 const router = Router();
 
 const DEFAULTS = {
-  site_name: 'Atlas',
-  site_tagline: 'Architecture & design from around the world',
-  site_footer: '© Atlas — Architecture & Design Magazine',
-  contact_email: 'hello@atlas.example.com'
+  site_name: 'Warta',
+  site_tagline: 'Berita & seni bina dari seluruh dunia',
+  site_footer: '© Warta — Majalah Seni Bina & Dunia',
+  contact_email: 'hello@warta.example.com'
 };
 
 function loadSettings() {

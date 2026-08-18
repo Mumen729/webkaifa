@@ -4,20 +4,20 @@ export function timeAgo(input) {
   const date = new Date(String(input).includes('T') ? input : input.replace(' ', 'T'));
   if (Number.isNaN(date.getTime())) return '';
   const diff = (Date.now() - date.getTime()) / 1000;
-  if (diff < 60) return 'just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
-  if (diff < 172800) return 'yesterday';
-  if (diff < 604800) return `${Math.floor(diff / 86400)} days ago`;
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  if (diff < 60) return 'baru sahaja';
+  if (diff < 3600) return `${Math.floor(diff / 60)} minit lalu`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)} jam lalu`;
+  if (diff < 172800) return 'semalam';
+  if (diff < 604800) return `${Math.floor(diff / 86400)} hari lalu`;
+  return date.toLocaleDateString('ms-MY', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
-/** Absolute date, e.g. "Mar 14, 2026". */
+/** Absolute date, e.g. "14 Mac 2026". */
 export function fmtDate(input) {
   if (!input) return '';
   const date = new Date(String(input).includes('T') ? input : input.replace(' ', 'T'));
   if (Number.isNaN(date.getTime())) return '';
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  return date.toLocaleDateString('ms-MY', { year: 'numeric', month: 'long', day: 'numeric' });
 }
 
 /** Deterministic gradient for placeholder covers. */

@@ -31,12 +31,12 @@ function HeroSlider({ slides }) {
         </div>
       ))}
       <div className="meta">
-        <span className="cat">{(slides[idx].category_name || 'Atlas').toUpperCase()}</span>
+        <span className="cat">{(slides[idx].category_name || 'Warta').toUpperCase()}</span>
         <h1>{slides[idx].title}</h1>
         <div className="by">
           <span>{slides[idx].author_name}</span>
           <span>{timeAgo(slides[idx].published_at)}</span>
-          <span>{fmtViews(slides[idx].views)} views</span>
+          <span>{fmtViews(slides[idx].views)} paparan</span>
         </div>
       </div>
       {slides.length > 1 && (
@@ -56,15 +56,15 @@ function CategoryBlock({ category, posts }) {
       <div className="sec-head">
         <span className="bar" />
         <h2>{category.name}</h2>
-        <Link className="more" to={`/category/${category.slug}`}>More {category.name} →</Link>
+        <Link className="more" to={`/category/${category.slug}`}>Lagi {category.name} →</Link>
       </div>
       <div className="catblock">
         <Link className="lead" to={`/post/${lead.slug}`}>
           <Cover src={lead.cover_image} label="" glyph="▣" />
-          <div className="cat">{lead.category_name || 'Atlas'}</div>
+          <div className="cat">{lead.category_name || 'Warta'}</div>
           <h3>{lead.title}</h3>
           <p>{lead.excerpt || ''}</p>
-          <span className="more">Read more →</span>
+          <span className="more">Baca lagi →</span>
         </Link>
         <div className="rows">
           {rest.slice(0, 4).map(p => (
@@ -110,8 +110,8 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data?.categories?.length]);
 
-  if (error) return <div className="wrap"><div className="empty"><h3>Could not load</h3><p>{error}</p></div></div>;
-  if (!data) return <div className="loading"><div className="spinner" /><p>Loading…</p></div>;
+  if (error) return <div className="wrap"><div className="empty"><h3>Tidak dapat dimuatkan</h3><p>{error}</p></div></div>;
+  if (!data) return <div className="loading"><div className="spinner" /><p>Memuatkan…</p></div>;
 
   const { featured, latest, trending, categories } = data;
   // dedupe by id — the feed must never show the same article twice
@@ -137,7 +137,7 @@ export default function Home() {
               <Link key={p.id} className="item" to={`/post/${p.slug}`}>
                 <Cover src={p.cover_image} label={p.category_name || ''} glyph="▣" />
                 <div className="meta">
-                  <span className="cat">{(p.category_name || 'Atlas').toUpperCase()}</span>
+                  <span className="cat">{(p.category_name || 'Warta').toUpperCase()}</span>
                   <h2>{p.title}</h2>
                   <div className="time">{timeAgo(p.published_at)}</div>
                 </div>
@@ -153,8 +153,8 @@ export default function Home() {
           <div className="sec" style={{ paddingTop: 6 }}>
             <div className="sec-head">
               <span className="bar" />
-              <h2>Latest News</h2>
-              <Link className="more" to="/search">View all →</Link>
+              <h2>Berita Terkini</h2>
+              <Link className="more" to="/search">Lihat Semua →</Link>
             </div>
             <div className="grid4">
               {latestGrid.map(p => <PostCard key={p.id} post={p} />)}
@@ -169,17 +169,17 @@ export default function Home() {
             <div className="sec">
               <div className="sec-head">
                 <span className="bar" />
-                <h2>Trending Now</h2>
+                <h2>Sedang Hangat</h2>
               </div>
               <div className="grid2">
                 {trending.filter(p => !heroIds.has(p.id)).slice(0, 6).map(p => (
                   <Link key={p.id} className="nrow" to={`/post/${p.slug}`}>
                     <Cover src={p.cover_image} label="" glyph="★" />
                     <div>
-                      <div className="cat">{p.category_name || 'Atlas'}</div>
+                      <div className="cat">{p.category_name || 'Warta'}</div>
                       <h4>{p.title}</h4>
                       <div className="m">
-                        {p.author_name} · {timeAgo(p.published_at)} · {fmtViews(p.views)} views
+                        {p.author_name} · {timeAgo(p.published_at)} · {fmtViews(p.views)} paparan
                       </div>
                     </div>
                   </Link>

@@ -1,5 +1,5 @@
 // Lightweight SEO helpers: page titles, meta description, canonical, JSON-LD.
-let SITE_NAME = 'Atlas';
+let SITE_NAME = 'Malaysia Times';
 
 export async function initSiteName() {
   try {

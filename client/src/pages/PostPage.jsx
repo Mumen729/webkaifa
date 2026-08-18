@@ -28,8 +28,8 @@ export default function PostPage() {
       .catch(e => setError(e.response?.data?.error || e.message));
   }, [slug]);
 
-  if (error) return <div className="wrap"><div className="empty"><h3>Story not found</h3><p>{error}</p></div></div>;
-  if (!post) return <div className="loading"><div className="spinner" /><p>Loading…</p></div>;
+  if (error) return <div className="wrap"><div className="empty"><h3>Berita tidak dijumpai</h3><p>{error}</p></div></div>;
+  if (!post) return <div className="loading"><div className="spinner" /><p>Memuatkan…</p></div>;
 
   const initials = (post.author_name || 'A').slice(0, 2).toUpperCase();
 
@@ -48,7 +48,7 @@ export default function PostPage() {
         <div className="main-col">
           <div className="article-card">
             <div className="breadcrumb">
-              <Link to="/">Home</Link>
+              <Link to="/">Laman Utama</Link>
               {post.category_slug && <> / <Link to={`/category/${post.category_slug}`}>{post.category_name}</Link></>}
             </div>
 
@@ -56,9 +56,9 @@ export default function PostPage() {
               <h1>{post.title}</h1>
               <div className="article-meta">
                 {post.category_name && <span className="chip">{post.category_name}</span>}
-                <span>By <Link to={`/author/${post.author_id}`} style={{ color: 'var(--accent)' }}>{post.author_name}</Link></span>
+                <span>Oleh <Link to={`/author/${post.author_id}`} style={{ color: 'var(--accent)' }}>{post.author_name}</Link></span>
                 <span>{fmtDate(post.published_at)}</span>
-                <span>{fmtViews(post.views)} views</span>
+                <span>{fmtViews(post.views)} paparan</span>
               </div>
             </div>
 
@@ -81,7 +81,7 @@ export default function PostPage() {
               </div>
               <div>
                 <Link to={`/author/${post.author_id}`}><b>{post.author_name}</b></Link>
-                <p>Writer at Atlas{post.author_username ? ` (@${post.author_username})` : ''}</p>
+                <p>Penulis di Malaysia Times{post.author_username ? ` (@${post.author_username})` : ''}</p>
               </div>
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function PostPage() {
             <div className="sec">
               <div className="sec-head">
                 <span className="bar" />
-                <h2>Related Stories</h2>
+                <h2>Berita Berkaitan</h2>
               </div>
               <div className="grid3">
                 {related.map(p => <PostCard key={p.id} post={p} />)}

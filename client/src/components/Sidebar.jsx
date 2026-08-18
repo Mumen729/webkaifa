@@ -19,14 +19,14 @@ export default function Sidebar() {
     <aside className="side">
       {hot.length > 0 && (
         <div className="sbox">
-          <div className="bt">Recent Hot Articles</div>
+          <div className="bt">Paling Hangat</div>
           <ol className="most">
             {hot.map((p, i) => (
               <li key={p.id}>
                 <span className="no">{i + 1}</span>
                 <div>
                   <Link to={`/post/${p.slug}`}><h4>{p.title}</h4></Link>
-                  <div className="m">{timeAgo(p.published_at)} · {p.views?.toLocaleString?.()} views</div>
+                  <div className="m">{timeAgo(p.published_at)} · {p.views?.toLocaleString?.()} paparan</div>
                 </div>
               </li>
             ))}
@@ -36,7 +36,7 @@ export default function Sidebar() {
 
       {tags.length > 0 && (
         <div className="sbox">
-          <div className="bt">Tags</div>
+          <div className="bt">Tag</div>
           <div className="tags">
             {tags.map(t => <Link key={t.id} to={`/tag/${t.slug}`}>#{t.name}</Link>)}
           </div>
@@ -44,12 +44,12 @@ export default function Sidebar() {
       )}
 
       <div className="sbox">
-        <div className="bt">Newsletter</div>
+        <div className="bt">Langganan</div>
         <div className="sub">
-          <p>Get the top stories delivered to your inbox every morning.</p>
+          <p>Berita utama dihantar ke e-mel anda setiap pagi.</p>
           <form className="row" onSubmit={(e) => e.preventDefault()}>
             <input type="email" placeholder="your@email.com" required />
-            <button type="submit">Join</button>
+            <button type="submit">Langgan</button>
           </form>
         </div>
       </div>

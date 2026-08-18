@@ -20,24 +20,24 @@ export default function CategoryPage() {
   }, [slug, page]);
 
   const title = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-  useEffect(() => { setSEO(`${title} News`, `All stories in ${title}.`); }, [title]);
+  useEffect(() => { setSEO(`Berita ${title}`, `Semua cerita dalam kategori ${title}.`); }, [title]);
 
   return (
     <>
       <div className="page-head">
         <div className="wrap">
-          <div className="breadcrumb"><Link to="/">Home</Link> / Category</div>
+          <div className="breadcrumb"><Link to="/">Laman Utama</Link> / Kategori</div>
           <h1>{title}</h1>
-          <div className="desc">{data ? `${data.total} stories` : 'Loading…'}</div>
+          <div className="desc">{data ? `${data.total} cerita` : 'Memuatkan…'}</div>
         </div>
       </div>
 
       <div className="wrap cols">
         <div className="main-col">
           {!data
-            ? <div className="loading"><div className="spinner" /><p>Loading…</p></div>
+            ? <div className="loading"><div className="spinner" /><p>Memuatkan…</p></div>
             : data.items.length === 0
-              ? <div className="empty"><h3>No stories here yet</h3><p>Check back soon, or browse another category.</p></div>
+              ? <div className="empty"><h3>Tiada cerita lagi</h3><p>Sila kembali kemudian, atau lihat kategori lain.</p></div>
               : <>
                   <div className="nlist">
                     {data.items.map(p => <NewsRow key={p.id} post={p} />)}

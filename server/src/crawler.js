@@ -1,6 +1,9 @@
 import Parser from 'rss-parser';
 import * as cheerio from 'cheerio';
 import { pathToFileURL } from 'node:url';
+import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { db, getOrCreateTag, getOrCreateCategory, slugify } from './db.js';
 import { ensureDefaultCovers, downloadImage } from './covers.js';
 import { netFetch } from './net.js';
@@ -22,148 +25,78 @@ import { netFetch } from './net.js';
  */
 
 const SOURCES = [
-  {
-    key: 'archd',
-    name: 'ArchDaily',
-    feed: 'https://www.archdaily.com/feed',
-    category: 'Architecture',
-    site: 'https://www.archdaily.com'
-  },
-  {
-    key: 'dezeen',
-    name: 'Dezeen',
-    feed: 'https://www.dezeen.com/feed/',
-    category: 'Architecture',
-    site: 'https://www.dezeen.com'
-  },
-  {
-    key: 'guardian-world',
-    name: 'The Guardian — World',
-    feed: 'https://www.theguardian.com/world/rss',
-    category: 'World News',
-    site: 'https://www.theguardian.com'
-  },
-  {
-    key: 'guardian-tech',
-    name: 'The Guardian — Technology',
-    feed: 'https://www.theguardian.com/technology/rss',
-    category: 'Technology',
-    site: 'https://www.theguardian.com'
-  },
-  {
-    key: 'bbc-world',
-    name: 'BBC World',
-    feed: 'https://feeds.bbci.co.uk/news/world/rss.xml',
-    category: 'World News',
-    site: 'https://www.bbc.com'
-  },
-  {
-    key: 'npr',
-    name: 'NPR News',
-    feed: 'https://feeds.npr.org/1001/rss.xml',
-    category: 'World News',
-    site: 'https://www.npr.org'
-  },
-  {
-    key: 'verge',
-    name: 'The Verge',
-    feed: 'https://www.theverge.com/rss/index.xml',
-    category: 'Technology',
-    site: 'https://www.theverge.com'
-  },
-  {
-    key: 'skynews',
-    name: 'Sky News — World',
-    feed: 'https://feeds.skynews.com/feeds/rss/world.xml',
-    category: 'World News',
-    site: 'https://news.sky.com'
-  },
-  {
-    key: 'cnet',
-    name: 'CNET News',
-    feed: 'https://www.cnet.com/rss/news/',
-    category: 'Technology',
-    site: 'https://www.cnet.com'
-  },
-  {
-    key: 'marketwatch',
-    name: 'MarketWatch — Top Stories',
-    feed: 'https://feeds.content.dowjones.io/public/rss/mw_topstories',
-    category: 'Business',
-    site: 'https://www.marketwatch.com'
-  },
-  {
-    key: 'euleader-world',
-    name: 'uk.euleader.org',
-    feed: 'https://uk.euleader.org/category/world/feed/',
-    category: 'World News',
-    site: 'https://uk.euleader.org'
-  },
-  {
-    key: 'euleader-politics',
-    name: 'uk.euleader.org',
-    feed: 'https://uk.euleader.org/category/politics/feed/',
-    category: 'World News',
-    site: 'https://uk.euleader.org'
-  },
-  {
-    key: 'euleader-science',
-    name: 'uk.euleader.org',
-    feed: 'https://uk.euleader.org/category/science/feed/',
-    category: 'Science',
-    site: 'https://uk.euleader.org'
-  },
-  {
-    key: 'euleader-sport',
-    name: 'uk.euleader.org',
-    feed: 'https://uk.euleader.org/category/sport/feed/',
-    category: 'Sports',
-    site: 'https://uk.euleader.org'
-  },
-  {
-    key: 'euleader-travel',
-    name: 'uk.euleader.org',
-    feed: 'https://uk.euleader.org/category/travel/feed/',
-    category: 'Travel',
-    site: 'https://uk.euleader.org'
-  },
-  // ---- social channels (Telegram, public pages) ----
-  {
-    key: 'tg-trtworld',
-    name: 'TRT World (Telegram)',
-    type: 'telegram',
-    channel: 'trtworld',
-    category: 'World News',
-    site: 'https://t.me/trtworld'
-  },
-  {
-    key: 'tg-skynews',
-    name: 'Sky News (Telegram)',
-    type: 'telegram',
-    channel: 'skynews',
-    category: 'World News',
-    site: 'https://t.me/skynews'
-  },
-  {
-    key: 'tg-apnews',
-    name: 'AP News (Telegram)',
-    type: 'telegram',
-    channel: 'apnews',
-    category: 'World News',
-    site: 'https://t.me/apnews'
-  }
+  // ---- Malay-language outlets ----
+  { key: 'utusan', name: 'Utusan Malaysia', feed: 'https://www.utusan.com.my/feed/', category: 'World News' },
+  { key: 'kosmo', name: 'Kosmo!', feed: 'https://www.kosmo.com.my/feed/', category: 'World News' },
+  { key: 'hmetro', name: 'Harian Metro', feed: 'https://www.hmetro.com.my/feed/', category: 'World News' },
+  { key: 'bharian', name: 'Berita Harian', feed: 'https://www.bharian.com.my/feed/', category: 'World News' },
+  // ---- English-language outlets (Malaysia) ----
+  { key: 'fmt-world', name: 'Free Malaysia Today — World', feed: 'https://www.freemalaysiatoday.com/category/world/feed/', category: 'World News' },
+  { key: 'fmt-nation', name: 'Free Malaysia Today — Nation', feed: 'https://www.freemalaysiatoday.com/category/nation/feed/', category: 'World News' },
+  { key: 'vibes-world', name: 'The Vibes — World', feed: 'https://www.thevibes.com/rss/world', category: 'World News' },
+  { key: 'nst', name: 'New Straits Times', feed: 'https://www.nst.com.my/feed/', category: 'World News' },
+  { key: 'malaysianow', name: 'MalaysiaNow', feed: 'https://www.malaysianow.com/feed/', category: 'World News' },
+  { key: 'scoop', name: 'Malaysia Scoop', feed: 'https://www.malaysiascoop.com/feed/', category: 'World News' },
+  { key: 'rakyatpost', name: 'The Rakyat Post', feed: 'https://www.therakyatpost.com/feed/', category: 'World News' },
+  { key: 'malaysiadateline', name: 'Malaysia Dateline', feed: 'https://malaysiadateline.com/feed/', category: 'World News' },
+  { key: 'rojakdaily', name: 'Rojak Daily', feed: 'https://www.rojakdaily.com/rss', category: 'World News' },
+  // ---- Business ----
+  { key: 'fmt-business', name: 'Free Malaysia Today — Business', feed: 'https://www.freemalaysiatoday.com/category/business/feed/', category: 'Business' },
+  { key: 'vibes-business', name: 'The Vibes — Business', feed: 'https://www.thevibes.com/rss/business', category: 'Business' },
+  // ---- Sports ----
+  { key: 'fmt-sports', name: 'Free Malaysia Today — Sports', feed: 'https://www.freemalaysiatoday.com/category/sports/feed/', category: 'Sports' },
+  { key: 'vibes-sports', name: 'The Vibes — Sports', feed: 'https://www.thevibes.com/rss/sports', category: 'Sports' },
+  // ---- Science ----
+  { key: 'vibes-science', name: 'The Vibes — Science', feed: 'https://www.thevibes.com/rss/science', category: 'Science' },
+  // ---- Travel / lifestyle ----
+  { key: 'fmt-lifestyle', name: 'Free Malaysia Today — Lifestyle', feed: 'https://www.freemalaysiatoday.com/category/lifestyle/feed/', category: 'Travel' },
+  { key: 'vibes-lifestyle', name: 'The Vibes — Lifestyle', feed: 'https://www.thevibes.com/rss/lifestyle', category: 'Travel' },
+  // ---- Technology ----
+  { key: 'soyacincau', name: 'SoyaCincau', feed: 'https://soyacincau.com/feed/', category: 'Technology' },
+  { key: 'technave', name: 'TechNave', feed: 'https://technave.com/feed/', category: 'Technology' },
+  { key: 'amanz', name: 'Amanz', feed: 'https://amanz.my/feed/', category: 'Technology' },
+  { key: 'lowyat', name: 'Lowyat.NET', feed: 'https://www.lowyat.net/feed/', category: 'Technology' },
+  // ---- Architecture (international sources) ----
+  { key: 'archdaily', name: 'ArchDaily', feed: 'https://www.archdaily.com/feed', category: 'Architecture' },
+  { key: 'dezeen', name: 'Dezeen', feed: 'https://www.dezeen.com/feed/', category: 'Architecture' }
 ];
 
 const args = process.argv.slice(2);
 const REFRESH = args.includes('--refresh');
 const limitArg = args.find(a => a.startsWith('--limit='));
 const LIMIT = limitArg ? parseInt(limitArg.split('=')[1], 10) : 10;
+// daily cap of NEW crawled posts per category (keeps each section fresh without flooding)
+const perCatArg = args.find(a => a.startsWith('--per-cat='));
+const PER_CAT_DAILY = perCatArg ? parseInt(perCatArg.split('=')[1], 10) : 5;
 // accept both "--source x" and "--source=x"
 const sourceIdx = args.indexOf('--source');
 const sourceArg = args.find(a => a.startsWith('--source=')) || (sourceIdx >= 0 ? `--source=${args[sourceIdx + 1]}` : undefined);
 const SOURCE_KEY = sourceArg ? sourceArg.split('=')[1] : null;
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36 AtlasBot/1.0';
+
+/* ---------------- per-category daily quota (file-backed) ---------------- */
+const __qdir = path.dirname(fileURLToPath(import.meta.url));
+const QUOTA_FILE = path.join(__qdir, '..', 'data', 'crawler-daily-quota.json');
+function quotaLoad() {
+  try {
+    const j = JSON.parse(fs.readFileSync(QUOTA_FILE, 'utf8'));
+    const today = new Date().toISOString().slice(0, 10);
+    if (j.date === today) return j;
+    return { date: today, perCat: {} };
+  } catch {
+    return { date: new Date().toISOString().slice(0, 10), perCat: {} };
+  }
+}
+function quotaGet(category) {
+  return quotaLoad().perCat[category] || 0;
+}
+function quotaAdd(category) {
+  const q = quotaLoad();
+  q.perCat[category] = (q.perCat[category] || 0) + 1;
+  try { fs.mkdirSync(path.dirname(QUOTA_FILE), { recursive: true }); } catch {}
+  fs.writeFileSync(QUOTA_FILE, JSON.stringify(q, null, 2));
+}
 
 const parser = new Parser({
   timeout: 30000,
@@ -407,6 +340,10 @@ async function importFeed(source) {
   const categoryId = getOrCreateCategory(source.category, `Imported from ${source.name}`);
   const crawlerUserId = ensureCrawlerUser();
 
+  // per-category daily quota tracked in a file (translated/seed posts don't count)
+  const usedToday = quotaGet(source.category);
+  let insertedToday = usedToday;
+
   let feed;
   try {
     const xml = await fetchFeedText(source.feed);
@@ -416,10 +353,13 @@ async function importFeed(source) {
     return { ok: false, error: err.message };
   }
 
-  let inserted = 0, skipped = 0, pageFetches = 0;
+  let inserted = 0, skipped = 0, pageFetches = 0, quotaHits = 0;
   const items = (feed.items || []).slice(0, LIMIT);
 
   for (const item of items) {
+    // daily per-category cap: stop importing into this category once quota is met
+    if (insertedToday >= PER_CAT_DAILY) { quotaHits++; continue; }
+
     const title = (item.title || '').trim();
     if (!title) { skipped++; continue; }
     if (db.prepare('SELECT id FROM posts WHERE source_url = ?').get(item.link)) { skipped++; continue; }
@@ -430,10 +370,15 @@ async function importFeed(source) {
     //    then with the r.jina.ai reader when the site blocks direct fetching
     let html = sanitizeHtml(item.contentEncoded || item.content || '');
     let readerMd = '';
+    let ogImage = '';
     if (stripHtml(html).length < 500 && item.link) {
       try {
         const pageHtml = await fetchUrl(item.link, 15000);
         pageFetches++;
+        // capture og:image from the article page (feed items often lack images)
+        const og = pageHtml.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+          || pageHtml.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+        if (og) ogImage = og[1];
         const extracted = extractMainHtml(pageHtml);
         if (extracted) html = extracted;
       } catch { /* keep RSS body */ }
@@ -451,6 +396,7 @@ async function importFeed(source) {
     //    skipped entirely (site policy — no default-cover placeholders for crawled content)
     let cover = '';
     let candidate = extractImage(item);
+    if (!candidate && ogImage) candidate = ogImage;
     if (!candidate && html) {
       const im = html.match(/<img[^>]+src=["']([^"']+)["']/i);
       if (im) candidate = im[1];
@@ -477,6 +423,8 @@ async function importFeed(source) {
       for (const t of tagNames) ins.run(info.lastInsertRowid, getOrCreateTag(t.slice(0, 60)));
 
       inserted++;
+      insertedToday++;
+      quotaAdd(source.category);
     } catch (err) {
       if (String(err.message).includes('UNIQUE')) { skipped++; continue; }
       console.log(`  ✗ item failed: ${err.message}`);
@@ -484,7 +432,7 @@ async function importFeed(source) {
     }
   }
 
-  console.log(`  ✓ ${source.name}: +${inserted} imported, ${skipped} skipped/duplicate (${pageFetches} article pages fetched)`);
+  console.log(`  ✓ ${source.name}: +${inserted} imported, ${skipped} skipped/duplicate, ${quotaHits} quota-skipped (${pageFetches} article pages fetched)`);
   return { ok: true, inserted, skipped };
 }
 
@@ -542,6 +490,20 @@ async function main() {
   }
 
   const total = results.reduce((s, r) => s + (r.inserted || 0), 0);
+
+  // rotate featured posts: newest article of each category becomes the hero slider
+  const newestPerCat = db.prepare(`
+    SELECT p.id FROM posts p
+    WHERE p.status = 'published'
+      AND p.id IN (SELECT id FROM posts WHERE category_id = p.category_id AND status='published' ORDER BY published_at DESC LIMIT 1)
+    ORDER BY p.published_at DESC
+    LIMIT 5
+  `).all();
+  db.prepare('UPDATE posts SET is_featured = 0 WHERE is_featured = 1').run();
+  const stmt = db.prepare('UPDATE posts SET is_featured = 1 WHERE id = ?');
+  for (const r of newestPerCat) stmt.run(r.id);
+  console.log(`[crawler] featured rotated to ${newestPerCat.length} newest category leaders`);
+
   const posts = db.prepare("SELECT COUNT(*) AS n FROM posts WHERE status='published'").get().n;
   console.log(`\n[crawler] done in ${((Date.now() - started) / 1000).toFixed(1)}s — inserted ${total}, published posts now: ${posts}`);
 }

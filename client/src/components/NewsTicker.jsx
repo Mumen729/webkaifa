@@ -20,7 +20,7 @@ export default function NewsTicker() {
   return (
     <div className="breaking">
       <div className="wrap">
-        <span className="label">Breaking</span>
+        <span className="label">Terkini</span>
         <div className="track-wrap">
           <div className="track">
             {doubled.map((p, i) => (

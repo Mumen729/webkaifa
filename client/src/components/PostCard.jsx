@@ -9,7 +9,7 @@ export default function PostCard({ post, glyph = '▣' }) {
     <Link className="card" to={`/post/${post.slug}`}>
       <Cover src={post.cover_image} label={post.category_name || ''} glyph={glyph} />
       <div className="body">
-        <div className="cat">{post.category_name || 'Atlas'}</div>
+        <div className="cat">{post.category_name || 'Warta'}</div>
         <h3>{post.title}</h3>
         <div className="foot">
           <span>{post.author_name}</span>

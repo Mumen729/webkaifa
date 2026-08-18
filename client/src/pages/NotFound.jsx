@@ -5,9 +5,9 @@ export default function NotFound() {
   return (
     <div className="wrap">
       <div className="empty">
-        <h3>404 — Page not found</h3>
-        <p>The page you're looking for doesn't exist.</p>
-        <p><Link to="/" style={{ color: 'var(--accent)' }}>← Back to home</Link></p>
+        <h3>404 — Halaman tidak dijumpai</h3>
+        <p>Halaman yang anda cari tidak wujud.</p>
+        <p><Link to="/" style={{ color: 'var(--accent)' }}>← Kembali ke laman utama</Link></p>
       </div>
     </div>
   );

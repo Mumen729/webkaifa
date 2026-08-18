@@ -9,14 +9,6 @@ and [Vegas Newser](https://vegasnewser.com)).
 - **Auth**: JWT + bcrypt; **Uploads**: multer → `server/uploads/`
 - **Content importer**: RSS crawler that fills the site from external news feeds
 
-## Design guidelines (applies to all future sites)
-
-- **Never show per-category article counts** anywhere on the public site
-  (no "World News (81)" style labels next to category names).
-- Category navigation should be a single row/bar with category names only.
-- Crawled content: no "via source" labels; article pages must not repeat the
-  cover image as the first body image.
-
 ## Requirements
 
 - Node.js **>= 22.5** (uses the built-in `node:sqlite`; tested on v24)

@@ -331,3 +331,7 @@ table.tbl tr:hover td{background:#fafbfc}
   .nrow{grid-template-columns:96px 1fr}
   .topbar .tagline{display:none}
 }
+
+
+/* Malaysia Times logo */
+.logo-img{height:32px;width:32px;border-radius:7px;flex:none}

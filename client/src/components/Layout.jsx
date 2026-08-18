@@ -4,7 +4,7 @@ import api from '../api/client.js';
 import NewsTicker from './NewsTicker.jsx';
 
 export default function Layout() {
-  const [settings, setSettings] = useState({ site_name: 'Atlas', site_tagline: '', site_footer: '' });
+  const [settings, setSettings] = useState({ site_name: 'Malaysia Times', site_tagline: '', site_footer: '' });
   const [categories, setCategories] = useState([]);
   const [q, setQ] = useState('');
   const [sp, setSp] = useSearchParams();
@@ -24,7 +24,7 @@ export default function Layout() {
     if (q.trim()) navigate(`/search?q=${encodeURIComponent(q.trim())}`);
   };
 
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const today = new Date().toLocaleDateString('ms-MY', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const cats = categories.slice(0, 8);
 
   return (
@@ -34,11 +34,11 @@ export default function Layout() {
         <div className="wrap">
           <div className="tb-left">
             <span className="date">{today}</span>
-            <span className="tagline">{settings.site_tagline || 'Architecture, design & world news — updated daily'}</span>
+            <span className="tagline">{settings.site_tagline || 'Berita arkitektur, reka bentuk & dunia — dikemas kini setiap hari'}</span>
           </div>
           <span>
-            <Link to="/admin/login">Login</Link>
-            <Link to="/admin">Publishing Desk</Link>
+            <Link to="/admin/login">Log Masuk</Link>
+            <Link to="/admin">Meja Penerbitan</Link>
           </span>
         </div>
       </div>
@@ -47,17 +47,17 @@ export default function Layout() {
       <header className="site">
         <div className="wrap header-inner">
           <Link className="logo" to="/">
-            <span className="mark" />
-            <span>{settings.site_name || 'Atlas'}<small>News &amp; Architecture</small></span>
+            <img src="/logo.svg" className="logo-img" alt="Malaysia Times" />
+<span>{settings.site_name || 'Malaysia Times'}<small>Berita Malaysia &amp; Dunia</small></span>
           </Link>
           <nav className="main">
-            <NavLink to="/" end>Home</NavLink>
+            <NavLink to="/" end>Laman Utama</NavLink>
             {cats.map(c => <NavLink key={c.id} to={`/category/${c.slug}`}>{c.name}</NavLink>)}
           </nav>
           <div className="header-actions">
             <form onSubmit={onSearch}>
-              <input placeholder="Search news…" value={q} onChange={e => setQ(e.target.value)} />
-              <button type="submit">Search</button>
+              <input placeholder="Cari berita…" value={q} onChange={e => setQ(e.target.value)} />
+              <button type="submit">Cari</button>
             </form>
           </div>
         </div>
@@ -72,12 +72,12 @@ export default function Layout() {
       <div className="newsletter">
         <div className="wrap">
           <div>
-            <h3>Subscribe to the daily briefing</h3>
-            <p>Top stories from around the world, one email a day.</p>
+            <h3>Langganan Harian</h3>
+            <p>Berita utama dari seluruh dunia, satu e-mel setiap hari.</p>
           </div>
           <form onSubmit={(e) => e.preventDefault()}>
             <input type="email" placeholder="your@email.com" required />
-            <button type="submit">Subscribe</button>
+            <button type="submit">Langgan</button>
           </form>
         </div>
       </div>
@@ -86,33 +86,33 @@ export default function Layout() {
       <footer className="site">
         <div className="wrap footer-grid">
           <div>
-            <div className="logo"><span className="mark" style={{ display: 'none' }} />{settings.site_name || 'Atlas'}</div>
+            <div className="logo">{settings.site_name || 'Malaysia Times'}</div>
             <p style={{ margin: '12px 0', lineHeight: 1.7 }}>
-              {settings.site_tagline || 'A digital newsroom covering architecture, design, technology and world affairs — updated daily.'}
+              {settings.site_tagline || 'Malaysia Times ialah portal berita dalam talian yang menyampaikan liputan berita Malaysia dan dunia, seni bina, teknologi, perniagaan, sains, sukan dan pelancongan — dikemas kini setiap hari.'}
             </p>
           </div>
           <div>
-            <h4>Categories</h4>
+            <h4>Kategori</h4>
             {categories.slice(0, 7).map(c => <Link key={c.id} to={`/category/${c.slug}`}>{c.name}</Link>)}
           </div>
           <div>
-            <h4>Explore</h4>
-            <Link to="/">Home</Link>
-            <Link to="/search">Search</Link>
-            <Link to="/admin/login">Login</Link>
-            <Link to="/admin">Publishing Desk</Link>
+            <h4>Terokai</h4>
+            <Link to="/">Laman Utama</Link>
+            <Link to="/search">Cari</Link>
+            <Link to="/admin/login">Log Masuk</Link>
+            <Link to="/admin">Meja Penerbitan</Link>
           </div>
           <div>
-            <h4>Contact</h4>
-            <a href={`mailto:${settings.contact_email || 'hello@atlas.example.com'}`}>
-              {settings.contact_email || 'hello@atlas.example.com'}
+            <h4>Hubungi</h4>
+            <a href={`mailto:${settings.contact_email || 'info@malaysiatimes.asia'}`}>
+              {settings.contact_email || 'info@malaysiatimes.asia'}
             </a>
-            <a href="#">Submissions</a>
-            <a href="#">Advertising</a>
-            <a href="#">About us</a>
+            <a href="#">Kiriman</a>
+            <a href="#">Iklan</a>
+            <a href="#">Tentang Kami</a>
           </div>
         </div>
-        <div className="foot-bottom">{settings.site_footer || `© ${new Date().getFullYear()} Atlas — All rights reserved`}</div>
+        <div className="foot-bottom">{settings.site_footer || `© ${new Date().getFullYear()} Malaysia Times — Hak cipta terpelihara`}</div>
       </footer>
     </>
   );

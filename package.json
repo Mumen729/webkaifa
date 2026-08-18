@@ -1,20 +1,22 @@
 {
-  "name": "newsblog",
+  "name": "newsblog-server",
   "version": "1.0.0",
   "private": true,
-  "description": "News blog publishing platform — React + Vite frontend, Express + SQLite backend",
+  "type": "module",
   "scripts": {
-    "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
-    "dev:server": "npm --prefix server run dev",
-    "dev:client": "npm --prefix client run dev",
-    "seed": "npm --prefix server run seed",
-    "crawl": "npm --prefix server run crawl",
-    "install:all": "npm --prefix server install && npm --prefix client install",
-    "build": "npm --prefix client run build",
-    "start": "npm --prefix server run start",
-    "change-password": "node server/src/change-password.js"
+    "dev": "node src/index.js",
+    "start": "node src/index.js",
+    "seed": "node src/seed.js",
+    "crawl": "node src/crawler.js"
   },
-  "devDependencies": {
-    "concurrently": "^9.1.0"
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.2.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "rss-parser": "^3.13.0",
+    "undici": "^8.10.0"
   }
 }

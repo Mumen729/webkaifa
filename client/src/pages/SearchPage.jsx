@@ -12,7 +12,7 @@ export default function SearchPage() {
   const page = parseInt(sp.get('page') || '1', 10);
   const [data, setData] = useState(null);
 
-  useEffect(() => { setSEO(q ? `Search: ${q}` : 'Search', 'Search Atlas stories.'); }, [q]);
+  useEffect(() => { setSEO(q ? `Cari: ${q}` : 'Cari', 'Cari cerita Warta.'); }, [q]);
 
   useEffect(() => {
     if (!q.trim()) { setData({ items: [], total: 0, page: 1, pages: 1 }); return; }
@@ -26,18 +26,18 @@ export default function SearchPage() {
     <>
       <div className="page-head">
         <div className="wrap">
-          <div className="breadcrumb">Search</div>
-          <h1>{q ? `Results for “${q}”` : 'Search'}</h1>
-          <div className="desc">{data ? `${data.total} ${data.total === 1 ? 'result' : 'results'} found` : 'Searching…'}</div>
+          <div className="breadcrumb">Cari</div>
+          <h1>{q ? `Keputusan untuk “${q}”` : 'Cari'}</h1>
+          <div className="desc">{data ? `${data.total} ${data.total === 1 ? 'hasil' : 'hasil'} ditemui` : 'Mencari…'}</div>
         </div>
       </div>
 
       <div className="wrap cols">
         <div className="main-col">
           {!data
-            ? <div className="loading"><div className="spinner" /><p>Searching…</p></div>
+            ? <div className="loading"><div className="spinner" /><p>Mencari…</p></div>
             : data.items.length === 0
-              ? <div className="empty"><h3>No results</h3><p>Try a different keyword, or browse by category.</p></div>
+              ? <div className="empty"><h3>Tiada hasil</h3><p>Cuba kata kunci lain, atau lihat mengikut kategori.</p></div>
               : <>
                   <div className="nlist">
                     {data.items.map(p => <NewsRow key={p.id} post={p} />)}

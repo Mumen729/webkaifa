@@ -26,8 +26,8 @@ function upsertCategory(name, slug, description, sortOrder = 0) {
 }
 
 // ---------- users ----------
-upsertUser('admin', 'admin123', 'Site Admin', 'admin', 'Managing editor of Atlas.');
-upsertUser('editor', 'editor123', 'Atlas Editorial', 'editor', 'The Atlas news desk.');
+upsertUser('admin', 'admin123', 'Site Admin', 'admin', 'Ketua pengarang Warta.');
+upsertUser('editor', 'editor123', 'Warta Editorial', 'editor', 'The Atlas news desk.');
 
 // ---------- categories ----------
 // only categories that actually carry content — no empty placeholder categories
@@ -51,10 +51,10 @@ ensureDefaultCovers();
 
 // ---------- settings ----------
 const settings = {
-  site_name: 'Atlas',
-  site_tagline: 'Architecture & design from around the world',
-  site_footer: '© Atlas — Architecture & Design Magazine',
-  contact_email: 'hello@atlas.example.com'
+  site_name: 'Warta',
+  site_tagline: 'Berita & seni bina dari seluruh dunia',
+  site_footer: '© Warta — Majalah Seni Bina & Dunia',
+  contact_email: 'hello@warta.example.com'
 };
 const set = db.prepare('INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)');
 for (const [k, v] of Object.entries(settings)) set.run(k, v);

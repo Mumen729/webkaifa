@@ -9,7 +9,7 @@ export default function NewsRow({ post }) {
     <Link className="nrow" to={`/post/${post.slug}`}>
       <Cover src={post.cover_image} label="" glyph="▣" />
       <div>
-        <div className="cat">{post.category_name || 'Atlas'}</div>
+        <div className="cat">{post.category_name || 'Warta'}</div>
         <h4>{post.title}</h4>
         <div className="m">
           {post.author_name} · {timeAgo(post.published_at)}

@@ -33,18 +33,18 @@ export default function AuthorPage() {
       .catch(() => setData({ items: [], total: 0, page: 1, pages: 1 }));
   }, [author, page]);
 
-  if (error) return <div className="wrap"><div className="empty"><h3>Author not found</h3><p>{error}</p></div></div>;
-  if (!author) return <div className="loading"><div className="spinner" /><p>Loading…</p></div>;
+  if (error) return <div className="wrap"><div className="empty"><h3>Penulis tidak dijumpai</h3><p>{error}</p></div></div>;
+  if (!author) return <div className="loading"><div className="spinner" /><p>Memuatkan…</p></div>;
 
   return (
     <>
       <div className="page-head">
         <div className="wrap">
-          <div className="breadcrumb"><Link to="/">Home</Link> / Author</div>
+          <div className="breadcrumb"><Link to="/">Laman Utama</Link> / Penulis</div>
           <h1>{author.display_name}</h1>
           <div className="desc">
-            {author.bio || 'Writer at Atlas.'}
-            {' '}{author.post_count} {author.post_count === 1 ? 'story' : 'stories'} published.
+            {author.bio || 'Penulis di Malaysia Times.'}
+            {' '}{author.post_count} {author.post_count === 1 ? 'cerita' : 'cerita'} diterbitkan.
           </div>
         </div>
       </div>
@@ -52,9 +52,9 @@ export default function AuthorPage() {
       <div className="wrap cols">
         <div className="main-col">
           {!data
-            ? <div className="loading"><div className="spinner" /><p>Loading…</p></div>
+            ? <div className="loading"><div className="spinner" /><p>Memuatkan…</p></div>
             : data.items.length === 0
-              ? <div className="empty"><h3>No published stories</h3></div>
+              ? <div className="empty"><h3>Tiada cerita diterbitkan</h3></div>
               : <>
                   <div className="nlist">
                     {data.items.map(p => <NewsRow key={p.id} post={p} />)}
