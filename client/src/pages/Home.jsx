@@ -118,6 +118,10 @@ export default function Home() {
   const heroSide = featured.slice(3, 5).length ? featured.slice(3, 5) : latest.slice(4, 6);
   const side = heroSide.length >= 2 ? heroSide : latest.slice(2, 4);
 
+  // articles shown in the hero (slider + side cards) must not repeat in the grid below
+  const heroIds = new Set([...slides, ...side].map(s => s.id));
+  const latestGrid = latest.filter(p => !heroIds.has(p.id));
+
   return (
     <>
       {/* hero */}
@@ -149,7 +153,7 @@ export default function Home() {
               <Link className="more" to="/search">View all →</Link>
             </div>
             <div className="grid4">
-              {latest.map(p => <PostCard key={p.id} post={p} />)}
+              {latestGrid.map(p => <PostCard key={p.id} post={p} />)}
             </div>
           </div>
 
@@ -164,7 +168,7 @@ export default function Home() {
                 <h2>Trending Now</h2>
               </div>
               <div className="grid2">
-                {trending.slice(0, 6).map(p => (
+                {trending.filter(p => !heroIds.has(p.id)).slice(0, 6).map(p => (
                   <Link key={p.id} className="nrow" to={`/post/${p.slug}`}>
                     <Cover src={p.cover_image} label="" glyph="★" />
                     <div>

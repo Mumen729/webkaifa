@@ -36,7 +36,6 @@ router.get('/home', (req, res) => {
         WHERE p.status = 'published' AND p.is_featured = 1
         ORDER BY p.published_at DESC LIMIT 8`
     ).all();
-
     const latest = db.prepare(
       `SELECT p.*, u.display_name AS author_name, u.username AS author_username, u.avatar AS author_avatar,
               c.name AS category_name, c.slug AS category_slug,
@@ -46,7 +45,7 @@ router.get('/home', (req, res) => {
          LEFT JOIN users u ON u.id = p.author_id
          LEFT JOIN categories c ON c.id = p.category_id
         WHERE p.status = 'published'
-        ORDER BY p.is_top DESC, p.published_at DESC LIMIT 8`
+        ORDER BY p.is_top DESC, p.published_at DESC LIMIT 12`
     ).all();
 
     const trending = db.prepare(
