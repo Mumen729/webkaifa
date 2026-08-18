@@ -24,20 +24,20 @@ input,textarea,select{font-family:inherit;font-size:14px}
 
 /* ================= HEADER ================= */
 header.site{background:linear-gradient(180deg,var(--navy),var(--navy-2));border-bottom:3px solid var(--accent)}
-.header-inner{display:flex;align-items:center;gap:26px;padding:16px 0}
-.logo{font-size:26px;font-weight:800;letter-spacing:1px;white-space:nowrap;color:#fff;display:flex;align-items:center;gap:10px}
+.header-inner{display:flex;align-items:center;gap:18px;padding:14px 0}
+.logo{font-size:24px;font-weight:800;letter-spacing:1px;white-space:nowrap;color:#fff;display:flex;align-items:center;gap:8px}
 .logo .mark{width:10px;height:26px;background:var(--accent);border-radius:2px;display:inline-block}
 .logo b{color:#fff}
 .logo small{display:block;font-size:10px;font-weight:500;color:#8b93a7;letter-spacing:3px;text-transform:uppercase}
-nav.main{flex:1;display:flex;flex-wrap:wrap;gap:4px;font-size:14px;font-weight:600}
-nav.main a{color:#d8dcea;padding:7px 10px;border-radius:4px;white-space:nowrap}
+nav.main{flex:1;display:flex;flex-wrap:nowrap;gap:6px;font-size:13px;font-weight:600}
+nav.main a{flex:1 1 0;text-align:center;padding:8px 4px;border-radius:4px;white-space:nowrap}
 nav.main a:hover{background:rgba(255,255,255,.08);color:#fff}
 nav.main a.active{background:var(--accent);color:#fff}
 .header-actions{display:flex;gap:10px;align-items:center}
 .header-actions form{display:flex}
-.header-actions input{padding:8px 12px;border:none;border-radius:4px 0 0 4px;outline:none;font-size:13px;width:180px;background:#10131b;color:#fff;border:1px solid #3a4358;border-right:none}
+.header-actions input{padding:8px 10px;border:none;border-radius:4px 0 0 4px;outline:none;font-size:13px;width:110px;background:#10131b;color:#fff;border:1px solid #3a4358;border-right:none}
 .header-actions input::placeholder{color:#6b748a}
-.header-actions button{border:none;background:var(--accent);color:#fff;padding:0 14px;border-radius:0 4px 4px 0;font-size:13px}
+.header-actions button{border:none;background:var(--accent);color:#fff;padding:0 12px;border-radius:0 4px 4px 0;font-size:13px}
 .header-actions .link-btn{color:#cfd5e3;font-size:13px;white-space:nowrap}
 .header-actions .link-btn:hover{color:#fff}
 
@@ -313,7 +313,7 @@ table.tbl tr:hover td{background:#fafbfc}
   .footer-grid{grid-template-columns:1fr 1fr}
   .footer-grid>div:first-child{grid-column:span 2}
   nav.main{display:none}
-  .header-actions input{width:120px}
+  .header-actions input{width:90px}
   .newsletter .wrap{flex-direction:column}
   .newsletter form{max-width:100%;width:100%}
   .article-head h1{font-size:24px}
@@ -333,4 +333,4 @@ table.tbl tr:hover td{background:#fafbfc}
 
 
 /* Malaysia Times logo */
-.logo-img{height:32px;width:32px;border-radius:7px;flex:none}
+.logo-img{height:28px;width:28px;border-radius:7px;flex:none}
