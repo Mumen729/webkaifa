@@ -6,7 +6,8 @@ import { netFetch } from './net.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsDir = path.join(__dirname, '..', 'uploads');
 const crawlDir = path.join(uploadsDir, 'crawl');
-const defaultsDir = path.join(uploadsDir, 'defaults');
+// versioned dir so URL changes bust any stale proxy/browser caches of old designs
+const defaultsDir = path.join(uploadsDir, 'defaults', 'v2');
 fs.mkdirSync(crawlDir, { recursive: true });
 fs.mkdirSync(defaultsDir, { recursive: true });
 
@@ -78,7 +79,7 @@ export function ensureDefaultCovers() {
 export function defaultCoverFor(seed) {
   let h = 0;
   for (const ch of String(seed || '')) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
-  return `/uploads/defaults/default-${(Math.abs(h) % VARIANTS.length) + 1}.svg`;
+  return `/uploads/defaults/v2/default-${(Math.abs(h) % VARIANTS.length) + 1}.svg`;
 }
 
 /** Detect real image extension from magic bytes (jpg/png/webp/gif/avif) or null. */
