@@ -198,12 +198,18 @@ if (fs.existsSync(distDir)) {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
     if (req.path.startsWith('/assets')) return next();
     if (/\.(js|css|png|jpg|jpeg|svg|ico|webp|gif|woff2?|txt|xml|map)$/i.test(req.path)) return next();
+    // never cache HTML — the bundle hash changes on every deploy, and stale
+    // index.html made browsers show old versions after fixes
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     const head = seoByPath.get(req.path) || seoByPath.get('/');
     res.send(injectSeo(indexHtml, head));
   });
 
   app.use(express.static(distDir, {
-    maxAge: 0, // no caching during this phase — every visit gets the newest build
+    // hashed assets (index-*.js/css) are immutable — cache for a year;
+    // index.html is explicitly not cached below
+    maxAge: '1y',
+    immutable: true,
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('index.html')) res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
@@ -212,6 +218,7 @@ if (fs.existsSync(distDir)) {
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
     if (req.path.startsWith('/assets') || /\.(js|css|png|jpg|jpeg|svg|ico|webp|gif|woff2?|txt|xml|map)$/i.test(req.path)) return next();
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     const head = seoByPath.get(req.path) || seoByPath.get('/');
     res.send(injectSeo(indexHtml, head));
   });
