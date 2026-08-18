@@ -29,9 +29,8 @@ header.site{background:linear-gradient(180deg,var(--navy),var(--navy-2));border-
 .logo .mark{width:10px;height:26px;background:var(--accent);border-radius:2px;display:inline-block}
 .logo b{color:#fff}
 .logo small{display:block;font-size:10px;font-weight:500;color:#8b93a7;letter-spacing:3px;text-transform:uppercase}
-nav.main{flex:1;display:flex;gap:4px;font-size:14px;font-weight:600;overflow-x:auto;scrollbar-width:none}
-nav.main::-webkit-scrollbar{display:none}
-nav.main a{color:#d8dcea;padding:8px 12px;border-radius:4px;white-space:nowrap}
+nav.main{flex:1;display:flex;flex-wrap:wrap;gap:4px;font-size:14px;font-weight:600}
+nav.main a{color:#d8dcea;padding:7px 10px;border-radius:4px;white-space:nowrap}
 nav.main a:hover{background:rgba(255,255,255,.08);color:#fff}
 nav.main a.active{background:var(--accent);color:#fff}
 .header-actions{display:flex;gap:10px;align-items:center}
