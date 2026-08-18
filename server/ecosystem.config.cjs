@@ -10,7 +10,8 @@ module.exports = {
       max_memory_restart: '400M',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000
+        PORT: 3000,
+        SITE_URL: 'http://154.12.39.187'
         // JWT_SECRET: 'replace-with-a-long-random-string'  (set via server env or .env)
       }
     }
