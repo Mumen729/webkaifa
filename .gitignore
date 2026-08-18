@@ -1,0 +1,18 @@
+# dependencies & build
+node_modules/
+dist/
+
+# runtime noise (SQLite WAL checkpoint files — the main news.db IS committed)
+server/data/*.db-wal
+server/data/*.db-shm
+*.log
+
+# tools (large binaries, re-downloadable)
+tools/
+
+# local backup artifacts
+_backup/
+
+# os
+.DS_Store
+Thumbs.db

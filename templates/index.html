@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>新闻博客主页 · 模板总览</title>
+<style>
+  :root{--ink:#111827;--muted:#6b7280;--line:#e5e7eb;--accent:#4f46e5;--bg:#f6f7fb;--card:#fff}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink)}
+  .wrap{max-width:1200px;margin:0 auto;padding:36px 24px 60px}
+  h1{font-size:28px;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:30px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column}
+  .preview{position:relative;height:230px;overflow:hidden;background:#fff;border-bottom:1px solid var(--line)}
+  .preview iframe{position:absolute;top:0;left:0;width:1200px;height:920px;transform:scale(.275);transform-origin:top left;pointer-events:none;border:none}
+  .info{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .tag{display:inline-block;background:#eef2ff;color:var(--accent);font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;align-self:flex-start}
+  h2{font-size:18px}
+  p{font-size:13.5px;color:var(--muted);line-height:1.7}
+  .feat{font-size:13px;color:#374151;line-height:1.8}
+  .feat b{color:var(--accent)}
+  .links{margin-top:auto;display:flex;gap:10px}
+  .links a{font-size:13.5px;font-weight:700;padding:9px 18px;border-radius:9px;text-decoration:none}
+  .open{background:var(--accent);color:#fff}
+  .open:hover{background:#4338ca}
+  .note{margin-top:34px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:18px 22px;font-size:13.5px;line-height:1.9;color:#7c2d12}
+  @media(max-width:860px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>新闻博客主页 · 4 套模板参考</h1>
+  <div class="sub">每套都是独立可打开的 HTML 文件（占位图为 CSS 渐变，无任何外部依赖）。点击卡片下方按钮可全屏预览。</div>
+
+  <div class="grid">
+
+    <div class="card">
+      <div class="preview"><iframe src="home-a-magazine.html" title="A"></iframe></div>
+      <div class="info">
+        <span class="tag">模板 A</span>
+        <h2>杂志风（参考 Amazing Architecture）</h2>
+        <p>大图封面 + 侧边小卡、网格卡片流、横向专题滚动条、分类大图入口。图片优先，适合建筑/设计/摄影类媒体。</p>
+        <div class="feat"><b>核心模块：</b>Hero 主图+副卡 / 最新发布 4 列网格 / 专题横滑 / 分类入口 / 订阅条</div>
+        <div class="links"><a class="open" href="home-a-magazine.html" target="_blank">打开预览 ↗</a></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="preview"><iframe src="home-b-newsportal.html" title="B"></iframe></div>
+      <div class="info">
+        <span class="tag">模板 B</span>
+        <h2>新闻门户（参考 Big News Network）</h2>
+        <p>顶部快讯滚动条 + 大头条+右侧快讯列表、三栏头条、按频道分区（左图头条+文字列表）、热搜榜侧栏。信息密度高，适合综合资讯类。</p>
+        <div class="feat"><b>核心模块：</b>快讯 ticker / 头条区 / 三栏头条 / 科技·财经·体育分区 / 热搜榜+标签云+广告位</div>
+        <div class="links"><a class="open" href="home-b-newsportal.html" target="_blank">打开预览 ↗</a></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="preview"><iframe src="home-c-blogstream.html" title="C"></iframe></div>
+      <div class="info">
+        <span class="tag">模板 C</span>
+        <h2>博客流（参考 Vegas Newser）</h2>
+        <p>标签 pill 导航、推荐横幅、单列图文列表（缩略图+标题+作者+时间+标签）、粘性侧栏（关于/热门/标签云/订阅）、分页。适合地方新闻/个人博客。</p>
+        <div class="feat"><b>核心模块：</b>标签导航 / 主编推荐横幅 / 文章流+标签 / 分页 / 关于+订阅侧栏</div>
+        <div class="links"><a class="open" href="home-c-blogstream.html" target="_blank">打开预览 ↗</a></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="preview"><iframe src="home-d-hybrid.html" title="D"></iframe></div>
+      <div class="info">
+        <span class="tag">模板 D</span>
+        <h2>现代混合版（自动轮播 + 大小卡混排）</h2>
+        <p>自动播放 Hero 轮播、大小卡片混排网格、图文列表 + 趋势榜/编辑推荐侧栏、粘性头部。现代杂志感，最接近产品级成品效果。</p>
+        <div class="feat"><b>核心模块：</b>自动轮播 / 混合网格 / 最新文章列表 / 本周趋势+编辑推荐 / 深色页脚</div>
+        <div class="links"><a class="open" href="home-d-hybrid.html" target="_blank">打开预览 ↗</a></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    <b>说明：</b>以上 4 套为纯 HTML+CSS 的静态主页线框，占位图用渐变模拟、示例内容为中文假数据，可直接双击文件在浏览器打开。
+    确定喜欢的模板后，我会把它作为前端首页的视觉基准，并按之前方案继续实现 React 前端 + Express/SQLite 后端（数据改为真实 API 渲染，占位图换成封面上传图）。
+  </div>
+</div>
+</body>
+</html>

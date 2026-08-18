@@ -1,0 +1,17 @@
+{
+  "name": "newsblog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "News blog publishing platform — React + Vite frontend, Express + SQLite backend",
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:client": "npm --prefix client run dev",
+    "seed": "npm --prefix server run seed",
+    "crawl": "npm --prefix server run crawl",
+    "install:all": "npm --prefix server install && npm --prefix client install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  }
+}

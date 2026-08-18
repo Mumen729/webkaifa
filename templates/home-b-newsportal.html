@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模板 B · 新闻门户主页（参考 Big News Network）</title>
+<style>
+  :root{
+    --ink:#1b1b1b; --muted:#6d6d6d; --line:#e5e5e5; --accent:#c62828; --dark:#0f2a43;
+    --bg:#fff;
+    --sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --serif:Georgia,"Songti SC","SimSun",serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg)}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 16px}
+
+  /* ---------- 顶部快讯 ticker ---------- */
+  .ticker{background:var(--dark);color:#fff;font-size:13px;overflow:hidden}
+  .ticker .wrap{display:flex;align-items:center;height:36px;gap:14px}
+  .ticker .tag{background:var(--accent);padding:3px 10px;font-weight:700;letter-spacing:2px;font-size:12px;flex:none}
+  .ticker .track{display:inline-flex;animation:scroll 28s linear infinite;white-space:nowrap}
+  .ticker .track span{padding-right:40px}
+  @keyframes scroll{to{transform:translateX(-50%)}}
+
+  /* ---------- 头部 ---------- */
+  header{background:var(--dark);color:#fff}
+  .header-inner{display:flex;align-items:center;gap:30px;padding:20px 0}
+  .logo{font-size:30px;font-weight:800;letter-spacing:1px;white-space:nowrap}
+  .logo b{color:#ffd54f}
+  .header-inner form{flex:1;display:flex;max-width:360px;margin-left:auto}
+  .header-inner input{flex:1;padding:9px 14px;border:none;outline:none;font-size:14px}
+  .header-inner button{background:var(--accent);border:none;color:#fff;padding:0 18px;cursor:pointer;font-size:14px}
+  nav.channels{border-top:1px solid rgba(255,255,255,.12)}
+  nav.channels .wrap{display:flex;gap:0;overflow-x:auto}
+  nav.channels a{padding:12px 16px;font-size:14px;color:#dbe4ee;white-space:nowrap;border-bottom:3px solid transparent}
+  nav.channels a:hover{color:#fff;border-bottom-color:var(--accent)}
+
+  /* ---------- 占位图 ---------- */
+  .ph{position:relative;overflow:hidden;background:#c9cfd6;color:#fff;display:flex}
+  .ph .glyph{font-size:90px;opacity:.25;margin:auto;font-family:var(--serif)}
+
+  /* ---------- 头条区 ---------- */
+  .hero{display:grid;grid-template-columns:1.9fr 1fr;gap:18px;padding:24px 0}
+  .hero-left{position:relative;border-radius:3px;overflow:hidden;min-height:400px;cursor:pointer}
+  .hero-left .ph{position:absolute;inset:0}
+  .hero-left .meta{position:absolute;inset:auto 0 0 0;padding:80px 26px 22px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.9))}
+  .hero-left .kicker{display:inline-block;background:var(--accent);font-size:12px;padding:2px 10px;margin-bottom:10px}
+  .hero-left h1{font-family:var(--serif);font-size:28px;line-height:1.4;margin-bottom:8px}
+  .hero-left .by{font-size:13px;opacity:.85}
+  .hero-right{display:flex;flex-direction:column;gap:10px}
+  .hitem{display:grid;grid-template-columns:112px 1fr;gap:12px;border-bottom:1px solid var(--line);padding-bottom:10px;cursor:pointer}
+  .hitem:last-child{border-bottom:none;padding-bottom:0}
+  .hitem .ph{height:64px;border-radius:3px}
+  .hitem h3{font-size:14px;line-height:1.45;font-weight:600}
+  .hitem .time{font-size:12px;color:var(--muted);margin-top:3px}
+
+  /* ---------- 区块标题 ---------- */
+  .sec{padding:6px 0 30px}
+  .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .sec-head .bar{width:4px;height:20px;background:var(--accent)}
+  .sec-head h2{font-size:19px;font-weight:800}
+  .sec-head .more{margin-left:auto;font-size:13px;color:var(--muted)}
+  .sec-head .more:hover{color:var(--accent)}
+
+  /* ---------- 三栏头条网格 ---------- */
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:3px;overflow:hidden;cursor:pointer;transition:.22s}
+  .card:hover{box-shadow:0 8px 20px rgba(0,0,0,.1);transform:translateY(-2px)}
+  .card .ph{height:150px}
+  .card .body{padding:14px}
+  .card h3{font-size:15.5px;line-height:1.45;font-weight:700}
+  .card .time{font-size:12px;color:var(--muted);margin-top:6px}
+
+  /* ---------- 主区 + 侧栏 ---------- */
+  .cols{display:grid;grid-template-columns:1fr 300px;gap:26px;padding:6px 0 30px}
+  .catsec{margin-bottom:26px;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .catsec .head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line)}
+  .catsec .head h3{font-size:16px;font-weight:800}
+  .catsec .head .more{margin-left:auto;font-size:12px;color:var(--muted)}
+  .catsec .content{display:grid;grid-template-columns:200px 1fr;gap:0}
+  .catsec .lead{position:relative;cursor:pointer;min-height:150px}
+  .catsec .lead .ph{position:absolute;inset:0}
+  .catsec .lead .t{position:absolute;inset:auto 0 0 0;padding:50px 12px 12px;color:#fff;font-size:14px;font-weight:700;
+    background:linear-gradient(transparent,rgba(0,0,0,.85));line-height:1.4}
+  .catsec ul{list-style:none}
+  .catsec li{border-bottom:1px dashed var(--line)}
+  .catsec li:last-child{border-bottom:none}
+  .catsec li a{display:block;padding:12px 16px;font-size:14px;line-height:1.4;cursor:pointer}
+  .catsec li a:hover{color:var(--accent);background:#fafafa}
+  .catsec li .time{font-size:11px;color:var(--muted);margin-top:3px}
+
+  /* ---------- 侧栏 ---------- */
+  .side .box{border:1px solid var(--line);border-radius:3px;margin-bottom:20px;overflow:hidden}
+  .side .box .bt{padding:11px 16px;font-weight:800;font-size:15px;background:#f7f7f7;border-bottom:1px solid var(--line)}
+  .hot li{display:flex;gap:12px;padding:12px 16px;border-bottom:1px dashed var(--line);cursor:pointer}
+  .hot li:last-child{border-bottom:none}
+  .hot .no{font-family:var(--serif);font-size:20px;font-weight:800;color:#c9c9c9;width:26px;text-align:center}
+  .hot li:nth-child(-n+3) .no{color:var(--accent)}
+  .hot h4{font-size:13.5px;line-height:1.4;font-weight:600}
+  .hot .n{font-size:11px;color:var(--muted);margin-top:2px}
+  .tags{padding:14px 16px;display:flex;flex-wrap:wrap;gap:8px}
+  .tags span{font-size:12px;background:#f0f0f0;padding:5px 11px;border-radius:14px;cursor:pointer}
+  .tags span:hover{background:var(--dark);color:#fff}
+  .ad{height:180px;background:repeating-linear-gradient(45deg,#f2f2f2,#f2f2f2 12px,#e9e9e9 12px,#e9e9e9 24px);
+    display:flex;align-items:center;justify-content:center;color:#999;font-size:13px}
+
+  /* ---------- 页脚 ---------- */
+  footer{background:#10151b;color:#9aa5b1;font-size:13px;margin-top:20px}
+  .f-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px;padding:36px 0 24px}
+  .f-grid h4{color:#fff;margin-bottom:12px;font-size:15px}
+  .f-grid a{display:block;color:#9aa5b1;margin-bottom:8px}
+  .f-grid a:hover{color:#fff}
+  .f-bottom{border-top:1px solid #1f2830;padding:16px 0;text-align:center;color:#5f6b76}
+
+  @media(max-width:960px){
+    .hero{grid-template-columns:1fr}
+    .grid3{grid-template-columns:1fr 1fr}
+    .cols{grid-template-columns:1fr}
+    .catsec .content{grid-template-columns:1fr}
+    .f-grid{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- 快讯 ticker -->
+<div class="ticker">
+  <div class="wrap">
+    <span class="tag">快讯</span>
+    <div style="overflow:hidden;flex:1">
+      <div class="track">
+        <span>🔥 国际油价今日小幅回落，OPEC+ 维持产量不变</span><span>📊 A 股三大指数全线收涨，科技板块领跑</span>
+        <span>⚽ 欧冠八强对阵出炉，两场焦点战备受关注</span><span>🤖 新一代 AI 芯片发布，算力提升 3 倍</span>
+        <span>🔥 国际油价今日小幅回落，OPEC+ 维持产量不变</span><span>📊 A 股三大指数全线收涨，科技板块领跑</span>
+        <span>⚽ 欧冠八强对阵出炉，两场焦点战备受关注</span><span>🤖 新一代 AI 芯片发布，算力提升 3 倍</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 头部 -->
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">环球<b>新闻网</b></div>
+    <form><input placeholder="搜索新闻、话题、人物…"><button>搜索</button></form>
+  </div>
+  <nav class="channels">
+    <div class="wrap">
+      <a href="#">首页</a><a href="#">国际</a><a href="#">财经</a><a href="#">科技</a><a href="#">体育</a>
+      <a href="#">娱乐</a><a href="#">健康</a><a href="#">生活</a><a href="#">旅游</a><a href="#">汽车</a>
+    </div>
+  </nav>
+</header>
+
+<!-- 头条区 -->
+<div class="wrap hero">
+  <div class="hero-left">
+    <div class="ph" style="background:linear-gradient(150deg,#1f4e5f,#0b222c)"><span class="glyph">◇</span></div>
+    <div class="meta">
+      <span class="kicker">国际</span>
+      <h1>全球气候峰会闭幕：各方就碳减排新目标达成历史性共识</h1>
+      <div class="by">环球新闻记者 李明 · 2026-03-14 09:30 · 评论 128</div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hitem">
+      <div class="ph" style="background:linear-gradient(140deg,#4c6b8a,#1c2b3d)"><span class="glyph">▣</span></div>
+      <div><h3>央行宣布下调存款准备金率 0.5 个百分点，释放长期资金约 1 万亿</h3><div class="time">1 小时前 · 财经</div></div>
+    </div>
+    <div class="hitem">
+      <div class="ph" style="background:linear-gradient(140deg,#8a4c4c,#3d1c1c)"><span class="glyph">▣</span></div>
+      <div><h3>国产大模型新版本发布：多模态能力对标国际前沿水平</h3><div class="time">2 小时前 · 科技</div></div>
+    </div>
+    <div class="hitem">
+      <div class="ph" style="background:linear-gradient(140deg,#4c8a5e,#1c3d26)"><span class="glyph">▣</span></div>
+      <div><h3>亚冠八强抽签揭晓，中超两强签运分化明显</h3><div class="time">3 小时前 · 体育</div></div>
+    </div>
+    <div class="hitem">
+      <div class="ph" style="background:linear-gradient(140deg,#8a7a4c,#3d3520)"><span class="glyph">▣</span></div>
+      <div><h3>年度电影节开幕：华语影片《长夜》入围主竞赛单元</h3><div class="time">5 小时前 · 娱乐</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 三栏头条 -->
+<div class="wrap sec">
+  <div class="sec-head"><span class="bar"></span><h2>今日头条</h2><a class="more" href="#">更多 →</a></div>
+  <div class="grid3">
+    <div class="card"><div class="ph" style="background:linear-gradient(150deg,#5f7d9e,#22344d)"><span class="glyph">◇</span></div>
+      <div class="body"><h3>多地发布楼市新政：公积金贷款额度上调，首付比例再降</h3><div class="time">财经 · 40 分钟前</div></div></div>
+    <div class="card"><div class="ph" style="background:linear-gradient(150deg,#8a5f4c,#4d2d22)"><span class="glyph">◇</span></div>
+      <div class="body"><h3>新款折叠屏旗舰手机发布：铰链寿命提升至 60 万次</h3><div class="time">科技 · 1 小时前</div></div></div>
+    <div class="card"><div class="ph" style="background:linear-gradient(150deg,#4c8a7d,#1c3d36)"><span class="glyph">◇</span></div>
+      <div class="body"><h3>世预赛亚洲区：国足客场逼平小组头名，出线形势向好</h3><div class="time">体育 · 2 小时前</div></div></div>
+  </div>
+</div>
+
+<!-- 主区 + 侧栏 -->
+<div class="wrap cols">
+
+  <div class="main">
+    <div class="catsec">
+      <div class="head"><h3>科技</h3><a class="more" href="#">更多 →</a></div>
+      <div class="content">
+        <div class="lead"><div class="ph" style="background:linear-gradient(150deg,#3d4d66,#141d2b)"><span class="glyph">▣</span></div><div class="t">AI 芯片战再升级：新一代加速卡算力提升 3 倍、功耗下降 40%</div></div>
+        <ul>
+          <li><a>SpaceX 星舰第九次试飞成功，二级回收技术再突破<div class="time">08:12</div></a></li>
+          <li><a>量子计算里程碑：1200 量子比特处理器完成纠错演示<div class="time">07:45</div></a></li>
+          <li><a>工信部：推动 5G-A 全面商用，覆盖重点城市群<div class="time">06:30</div></a></li>
+          <li><a>国产操作系统装机量破 3 亿，生态建设进入快车道<div class="time">05:18</div></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="catsec">
+      <div class="head"><h3>财经</h3><a class="more" href="#">更多 →</a></div>
+      <div class="content">
+        <div class="lead"><div class="ph" style="background:linear-gradient(150deg,#5f4c8a,#2d224d)"><span class="glyph">▣</span></div><div class="t">北向资金单日净买入创年内新高，外资持续加仓中国资产</div></div>
+        <ul>
+          <li><a>央行：保持流动性合理充裕，择机降准降息<div class="time">09:02</div></a></li>
+          <li><a>黄金价格再创历史新高，机构上调全年目标价<div class="time">08:40</div></a></li>
+          <li><a>新能源车企二月销量出炉：多家同比翻倍增长<div class="time">07:55</div></a></li>
+          <li><a>多地发放消费券，一季度促消费政策密集落地<div class="time">06:10</div></a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="catsec">
+      <div class="head"><h3>体育</h3><a class="more" href="#">更多 →</a></div>
+      <div class="content">
+        <div class="lead"><div class="ph" style="background:linear-gradient(150deg,#4c8a5e,#1c3d26)"><span class="glyph">▣</span></div><div class="t">中超新赛季揭幕战：卫冕冠军主场 3:1 逆转取得开门红</div></div>
+        <ul>
+          <li><a>NBA 常规赛：西部第一争夺白热化，两队仅差 0.5 个胜场<div class="time">11:20</div></a></li>
+          <li><a>乒乓球大满贯赛：国乒包揽男单四强席位<div class="time">10:05</div></a></li>
+          <li><a>F1 新赛季前瞻：十支车队全部完成冬测<div class="time">09:30</div></a></li>
+          <li><a>CBA 季后赛对阵确定：八强战周末打响<div class="time">08:15</div></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- 侧栏 -->
+  <aside class="side">
+    <div class="box">
+      <div class="bt">热搜榜</div>
+      <ol class="hot">
+        <li><span class="no">1</span><div><h4>气候峰会达成历史性共识</h4><div class="n">315.2 万热度</div></div></li>
+        <li><span class="no">2</span><div><h4>央行降准释放万亿资金</h4><div class="n">287.6 万热度</div></div></li>
+        <li><span class="no">3</span><div><h4>国产 AI 大模型新版本</h4><div class="n">254.1 万热度</div></div></li>
+        <li><span class="no">4</span><div><h4>欧冠八强对阵揭晓</h4><div class="n">198.3 万热度</div></div></li>
+        <li><span class="no">5</span><div><h4>折叠屏新机发布</h4><div class="n">176.9 万热度</div></div></li>
+      </ol>
+    </div>
+    <div class="box">
+      <div class="bt">热门标签</div>
+      <div class="tags">
+        <span># AI</span><span># 央行</span><span># 楼市</span><span># 新能源</span><span># 欧冠</span>
+        <span># 折叠屏</span><span># 星舰</span><span># 黄金</span><span># 消费券</span>
+      </div>
+    </div>
+    <div class="box"><div class="ad">广告位 300×180</div></div>
+  </aside>
+</div>
+
+<!-- 页脚 -->
+<footer>
+  <div class="wrap f-grid">
+    <div><h4>环球新闻网</h4><p style="line-height:1.7">24 小时全球新闻资讯平台，覆盖国际、财经、科技、体育、娱乐等领域的即时报道。</p></div>
+    <div><h4>频道</h4><a href="#">国际</a><a href="#">财经</a><a href="#">科技</a><a href="#">体育</a><a href="#">娱乐</a></div>
+    <div><h4>服务</h4><a href="#">新闻客户端</a><a href="#">投稿</a><a href="#">媒体合作</a><a href="#">广告</a></div>
+    <div><h4>关于</h4><a href="#">关于我们</a><a href="#">联系我们</a><a href="#">隐私政策</a><a href="#">免责声明</a></div>
+  </div>
+  <div class="f-bottom">© 2026 环球新闻网 · 模板 B 主页线框 · 仅供方案参考</div>
+</footer>
+
+</body>
+</html>

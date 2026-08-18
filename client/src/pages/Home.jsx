@@ -1,0 +1,184 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import api from '../api/client.js';
+import Cover from '../components/Cover.jsx';
+import PostCard from '../components/PostCard.jsx';
+import Sidebar from '../components/Sidebar.jsx';
+import { timeAgo, fmtViews } from '../utils/format.js';
+
+function HeroSlider({ slides }) {
+  const [idx, setIdx] = useState(0);
+  const timer = useRef(null);
+
+  useEffect(() => {
+    if (slides.length < 2) return;
+    timer.current = setInterval(() => setIdx(i => (i + 1) % slides.length), 5000);
+    return () => clearInterval(timer.current);
+  }, [slides.length]);
+
+  const go = (n) => {
+    setIdx(n);
+    clearInterval(timer.current);
+    if (slides.length > 1) timer.current = setInterval(() => setIdx(i => (i + 1) % slides.length), 5000);
+  };
+
+  return (
+    <Link className="hero-main" to={`/post/${slides[idx].slug}`}>
+      {slides.map((s, i) => (
+        <div key={s.id} className={`slide${i === idx ? ' on' : ''}`}>
+          <Cover src={s.cover_image} label={s.category_name || ''} glyph="◇" />
+        </div>
+      ))}
+      <div className="meta">
+        <span className="cat">{(slides[idx].category_name || 'Atlas').toUpperCase()}</span>
+        <h1>{slides[idx].title}</h1>
+        <div className="by">
+          <span>{slides[idx].source_name ? `via ${slides[idx].source_name}` : slides[idx].author_name}</span>
+          <span>{timeAgo(slides[idx].published_at)}</span>
+          <span>{fmtViews(slides[idx].views)} views</span>
+        </div>
+      </div>
+      {slides.length > 1 && (
+        <div className="hero-dots">
+          {slides.map((s, i) => <i key={s.id} className={i === idx ? 'on' : ''} onClick={(e) => { e.preventDefault(); go(i); }} />)}
+        </div>
+      )}
+    </Link>
+  );
+}
+
+function CategoryBlock({ category, posts }) {
+  if (!posts.length) return null;
+  const [lead, ...rest] = posts;
+  return (
+    <div className="sec">
+      <div className="sec-head">
+        <span className="bar" />
+        <h2>{category.name}</h2>
+        <Link className="more" to={`/category/${category.slug}`}>More {category.name} →</Link>
+      </div>
+      <div className="catblock">
+        <Link className="lead" to={`/post/${lead.slug}`}>
+          <Cover src={lead.cover_image} label="" glyph="▣" />
+          <div className="cat">{lead.category_name || 'Atlas'}</div>
+          <h3>{lead.title}</h3>
+          <p>{lead.excerpt || ''}</p>
+          <span className="more">Read more →</span>
+        </Link>
+        <div className="rows">
+          {rest.slice(0, 4).map(p => (
+            <Link key={p.id} className="rrow" to={`/post/${p.slug}`}>
+              <Cover src={p.cover_image} label="" glyph="▣" />
+              <div>
+                <h4>{p.title}</h4>
+                <div className="m">
+                  {p.source_name ? `via ${p.source_name}` : p.author_name} · {timeAgo(p.published_at)}
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function Home() {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [catPosts, setCatPosts] = useState({});
+
+  useEffect(() => {
+    api.get('/settings/home').then(r => setData(r.data)).catch(e => setError(e.message));
+  }, []);
+
+  // fetch per-category posts for the section blocks
+  const blockCategories = data ? data.categories.slice(0, 4) : [];
+  useEffect(() => {
+    if (!blockCategories.length) return;
+    let alive = true;
+    blockCategories.forEach(c => {
+      api.get('/posts', { params: { category: c.slug, limit: 5 } })
+        .then(r => { if (alive) setCatPosts(p => ({ ...p, [c.slug]: r.data.items })); })
+        .catch(() => {});
+    });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.categories?.length]);
+
+  if (error) return <div className="wrap"><div className="empty"><h3>Could not load</h3><p>{error}</p></div></div>;
+  if (!data) return <div className="loading"><div className="spinner" /><p>Loading…</p></div>;
+
+  const { featured, latest, trending, categories } = data;
+  const slides = featured.length >= 3 ? featured.slice(0, 5) : (latest.length ? [featured[0] || latest[0], ...latest.slice(0, 3).filter(p => p.id !== (featured[0] || {}).id)] : []);
+  const heroSide = featured.slice(3, 5).length ? featured.slice(3, 5) : latest.slice(4, 6);
+  const side = heroSide.length >= 2 ? heroSide : latest.slice(2, 4);
+
+  return (
+    <>
+      {/* hero */}
+      {slides.length > 0 && (
+        <div className="wrap hero">
+          <HeroSlider slides={slides} />
+          <div className="hero-side">
+            {side.map(p => (
+              <Link key={p.id} className="item" to={`/post/${p.slug}`}>
+                <Cover src={p.cover_image} label={p.category_name || ''} glyph="▣" />
+                <div className="meta">
+                  <span className="cat">{(p.category_name || 'Atlas').toUpperCase()}</span>
+                  <h2>{p.title}</h2>
+                  <div className="time">{timeAgo(p.published_at)}</div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="wrap cols">
+        <div className="main-col">
+          {/* latest grid */}
+          <div className="sec" style={{ paddingTop: 6 }}>
+            <div className="sec-head">
+              <span className="bar" />
+              <h2>Latest News</h2>
+              <Link className="more" to="/search">View all →</Link>
+            </div>
+            <div className="grid4">
+              {latest.map(p => <PostCard key={p.id} post={p} />)}
+            </div>
+          </div>
+
+          {/* category sections */}
+          {blockCategories.map(c => <CategoryBlock key={c.id} category={c} posts={catPosts[c.slug] || []} />)}
+
+          {/* trending strip */}
+          {trending.length > 0 && (
+            <div className="sec">
+              <div className="sec-head">
+                <span className="bar" />
+                <h2>Trending Now</h2>
+              </div>
+              <div className="grid2">
+                {trending.slice(0, 6).map(p => (
+                  <Link key={p.id} className="nrow" to={`/post/${p.slug}`}>
+                    <Cover src={p.cover_image} label="" glyph="★" />
+                    <div>
+                      <div className="cat">{p.category_name || 'Atlas'}</div>
+                      <h4>{p.title}</h4>
+                      <div className="m">
+                        {p.source_name ? `via ${p.source_name}` : p.author_name} · {timeAgo(p.published_at)} · {fmtViews(p.views)} views
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Sidebar />
+      </div>
+    </>
+  );
+}

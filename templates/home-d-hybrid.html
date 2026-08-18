@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模板 D · 现代混合版主页（轮播 + 混合网格 + 侧栏）</title>
+<style>
+  :root{
+    --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --accent:#4f46e5; --accent2:#7c3aed;
+    --bg:#f9fafb; --card:#fff;
+    --sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --serif:Georgia,"Songti SC","SimSun",serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg)}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 20px}
+
+  /* ---------- 头部 ---------- */
+  header{background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+  .head-row{display:flex;align-items:center;gap:28px;height:64px}
+  .logo{font-size:22px;font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+  .logo .mark{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:inline-block}
+  nav.main{flex:1;display:flex;gap:22px;font-size:14px;font-weight:600}
+  nav.main a{color:#374151;position:relative;padding:20px 0}
+  nav.main a::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:2px;background:var(--accent);transform:scaleX(0);transition:.2s}
+  nav.main a:hover{color:var(--accent)}
+  nav.main a:hover::after{transform:scaleX(1)}
+  .head-actions{display:flex;gap:10px;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:8px 16px;border-radius:8px;cursor:pointer;border:1px solid var(--line);background:#fff;font-weight:600}
+  .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .btn.primary:hover{background:#4338ca}
+  .btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---------- 占位图 ---------- */
+  .ph{position:relative;overflow:hidden;background:#e2e5ea;color:#fff;display:flex}
+  .ph .glyph{position:absolute;right:6%;bottom:-8%;font-size:120px;opacity:.22;font-family:var(--serif)}
+  .ph .chip{position:absolute;top:12px;left:12px;background:rgba(17,24,39,.6);backdrop-filter:blur(4px);font-size:11px;padding:4px 10px;border-radius:6px;letter-spacing:.5px}
+
+  /* ---------- Hero 轮播 ---------- */
+  .hero{position:relative;margin:26px 0 10px;border-radius:16px;overflow:hidden;height:440px;cursor:pointer;box-shadow:0 20px 50px rgba(0,0,0,.18)}
+  .slide{position:absolute;inset:0;opacity:0;transition:opacity .8s}
+  .slide.on{opacity:1}
+  .slide .ph{position:absolute;inset:0}
+  .slide .meta{position:absolute;inset:auto 0 0 0;padding:120px 44px 36px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.88))}
+  .slide .kicker{display:inline-block;background:var(--accent);font-size:12px;padding:4px 12px;border-radius:6px;margin-bottom:12px;letter-spacing:1px}
+  .slide h1{font-family:var(--serif);font-size:34px;line-height:1.35;max-width:760px;margin-bottom:12px}
+  .slide .by{font-size:14px;opacity:.85}
+  .dots{position:absolute;right:40px;bottom:32px;display:flex;gap:8px}
+  .dots i{width:26px;height:5px;border-radius:3px;background:rgba(255,255,255,.4);cursor:pointer;transition:.3s}
+  .dots i.on{background:#fff;width:40px}
+
+  /* ---------- 混合网格（大小卡片） ---------- */
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:22px 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;transition:.22s}
+  .card:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(0,0,0,.1)}
+  .card .ph{height:150px}
+  .card .body{padding:14px 16px 16px}
+  .card .cat{font-size:11px;color:var(--accent);font-weight:700;letter-spacing:1px}
+  .card h3{font-size:15px;line-height:1.45;margin:7px 0 9px;font-weight:700}
+  .card .foot{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+  .card.big{grid-column:span 2;grid-row:span 2;display:flex;flex-direction:column}
+  .card.big .ph{flex:1;min-height:240px}
+  .card.big h3{font-size:20px;font-family:var(--serif)}
+
+  /* ---------- 两栏：分类区 + 侧栏 ---------- */
+  .cols{display:grid;grid-template-columns:1fr 320px;gap:30px;padding:26px 0 40px;align-items:start}
+  .sec-head{display:flex;align-items:center;gap:10px;margin:6px 0 16px}
+  .sec-head .bar{width:4px;height:20px;border-radius:2px;background:linear-gradient(var(--accent),var(--accent2))}
+  .sec-head h2{font-size:18px;font-weight:800}
+  .sec-head .more{margin-left:auto;font-size:13px;color:var(--muted);font-weight:600}
+  .sec-head .more:hover{color:var(--accent)}
+  .list-card{display:flex;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:12px;cursor:pointer;transition:.2s}
+  .list-card:hover{border-color:var(--accent);box-shadow:0 6px 16px rgba(0,0,0,.07)}
+  .list-card .ph{width:130px;height:84px;border-radius:8px;flex:none}
+  .list-card h4{font-size:14px;line-height:1.45;font-weight:700;margin-bottom:6px}
+  .list-card h4:hover{color:var(--accent)}
+  .list-card .m{font-size:11.5px;color:var(--muted)}
+
+  /* ---------- 侧栏 ---------- */
+  .side{position:sticky;top:84px}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:18px;overflow:hidden}
+  .box .bt{padding:13px 18px;font-weight:800;font-size:15px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .box .bt::before{content:"";width:4px;height:16px;border-radius:2px;background:linear-gradient(var(--accent),var(--accent2))}
+  .trend{padding:8px 18px 12px;counter-reset:tr}
+  .trend .t{display:flex;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line);cursor:pointer;align-items:flex-start}
+  .trend .t:last-child{border-bottom:none}
+  .trend .t::before{counter-increment:tr;content:counter(tr);font-family:var(--serif);font-size:22px;font-weight:800;color:#d5d8de;min-width:28px}
+  .trend .t:nth-child(-n+3)::before{color:var(--accent)}
+  .trend h4{font-size:13.5px;line-height:1.45;font-weight:600}
+  .trend .n{font-size:11px;color:var(--muted);margin-top:2px}
+  .wlist{padding:12px 18px}
+  .wlist .w{display:flex;gap:10px;align-items:center;padding:8px 0;cursor:pointer}
+  .wlist .w .ph{width:52px;height:52px;border-radius:10px;flex:none}
+  .wlist .w h5{font-size:13px;line-height:1.4;font-weight:600}
+  .wlist .w .m{font-size:11px;color:var(--muted);margin-top:2px}
+  .tags{padding:14px 18px;display:flex;flex-wrap:wrap;gap:8px}
+  .tags span{font-size:12px;background:#f1f2f6;padding:6px 13px;border-radius:20px;cursor:pointer;font-weight:600}
+  .tags span:hover{background:var(--accent);color:#fff}
+
+  /* ---------- 页脚 ---------- */
+  footer{background:#0f1320;color:#98a0b3;font-size:13px}
+  .f-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:28px;padding:44px 0 30px}
+  .f-grid h4{color:#fff;font-size:15px;margin-bottom:14px}
+  .f-grid a{display:block;color:#98a0b3;margin-bottom:9px}
+  .f-grid a:hover{color:#fff}
+  .f-bottom{border-top:1px solid #1e2434;padding:18px 0;text-align:center;color:#5c6475}
+
+  @media(max-width:960px){
+    .hero{height:360px}
+    .slide h1{font-size:24px}
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .card.big{grid-column:span 2}
+    .cols{grid-template-columns:1fr}
+    .side{position:static}
+    .f-grid{grid-template-columns:1fr 1fr}
+    nav.main{display:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- 头部 -->
+<header>
+  <div class="wrap head-row">
+    <div class="logo"><span class="mark"></span>新知周刊</div>
+    <nav class="main">
+      <a href="#">首页</a><a href="#">深度</a><a href="#">科技</a><a href="#">商业</a><a href="#">文化</a><a href="#">生活</a><a href="#">专题</a>
+    </nav>
+    <div class="head-actions">
+      <span class="btn">🔍</span>
+      <span class="btn primary">登录</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- Hero 轮播 -->
+  <div class="hero" id="hero">
+    <div class="slide on">
+      <div class="ph" style="background:linear-gradient(140deg,#1e3a5f,#0b1626)"><span class="glyph">◇</span><span class="chip">深度报道</span></div>
+      <div class="meta">
+        <span class="kicker">专题 · 第 42 期</span>
+        <h1>城市折叠：被写字楼包围的老街区，如何在大公司到来之后活下来</h1>
+        <div class="by">作者 陈默 · 2026-03-14 · 阅读 5.6k</div>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="ph" style="background:linear-gradient(140deg,#3f2d63,#171026)"><span class="glyph">✦</span><span class="chip">科技</span></div>
+      <div class="meta">
+        <span class="kicker">前沿</span>
+        <h1>AI 进入办公日常的第三年：效率提升是真的，但焦虑也是真的</h1>
+        <div class="by">作者 苏晚 · 2026-03-13 · 阅读 4.2k</div>
+      </div>
+    </div>
+    <div class="slide">
+      <div class="ph" style="background:linear-gradient(140deg,#1f4a3a,#0b1e17)"><span class="glyph">❖</span><span class="chip">商业</span></div>
+      <div class="meta">
+        <span class="kicker">观察</span>
+        <h1>一杯咖啡 68 元的逻辑：新消费品牌为什么都在讲"体验溢价"</h1>
+        <div class="by">作者 周一舟 · 2026-03-12 · 阅读 3.8k</div>
+      </div>
+    </div>
+    <div class="dots" id="dots"></div>
+  </div>
+
+  <!-- 混合网格 -->
+  <div class="grid">
+    <div class="card big">
+      <div class="ph" style="background:linear-gradient(150deg,#8a6b4c,#3d2b1c)"><span class="glyph">▣</span><span class="chip">文化</span></div>
+      <div class="body">
+        <div class="cat">CULTURE</div>
+        <h3>旧书市的黄昏：电子阅读十年后，实体书店在县城悄悄复活</h3>
+        <div class="foot"><span>陈默</span><span>1 天前</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(150deg,#4c6b8a,#1c2b3d)"><span class="glyph">⌁</span></div>
+      <div class="body">
+        <div class="cat">TECH</div>
+        <h3>开源项目维护者的困境：免费劳动与商业化之间</h3>
+        <div class="foot"><span>苏晚</span><span>2 天前</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(150deg,#5f8a4c,#243d1c)"><span class="glyph">❋</span></div>
+      <div class="body">
+        <div class="cat">LIFE</div>
+        <h3>露营经济的下一站：从帐篷到"野奢"的消费升级</h3>
+        <div class="foot"><span>林小溪</span><span>2 天前</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(150deg,#8a4c6b,#3d1c2b)"><span class="glyph">✧</span></div>
+      <div class="body">
+        <div class="cat">BIZ</div>
+        <h3>会员制超市混战：谁在真正改变中国人的购物车</h3>
+        <div class="foot"><span>周一舟</span><span>3 天前</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(150deg,#6b4c8a,#2b1c3d)"><span class="glyph">✳</span></div>
+      <div class="body">
+        <div class="cat">DEEP</div>
+        <h3>小城青年的"返乡创业"样本调查</h3>
+        <div class="foot"><span>编辑部</span><span>3 天前</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 两栏 -->
+  <div class="cols">
+
+    <main>
+      <div class="sec-head"><span class="bar"></span><h2>最新文章</h2><a class="more" href="#">查看全部 →</a></div>
+
+      <div class="list-card">
+        <div class="ph" style="background:linear-gradient(140deg,#8a7a4c,#3d3520)"></div>
+        <div>
+          <h4>为什么越来越多城市开始拆掉高架桥？——全球"去高架化"运动观察</h4>
+          <div class="m">城市 · 陈默 · 4 小时前 · 1.2k 阅读</div>
+        </div>
+      </div>
+      <div class="list-card">
+        <div class="ph" style="background:linear-gradient(140deg,#4c7d8a,#1c343d)"></div>
+        <div>
+          <h4>从"炒鞋"到"炒卡"：年轻人收藏市场的迁移逻辑</h4>
+          <div class="m">商业 · 周一舟 · 6 小时前 · 986 阅读</div>
+        </div>
+      </div>
+      <div class="list-card">
+        <div class="ph" style="background:linear-gradient(140deg,#8a5f4c,#3d2a1c)"></div>
+        <div>
+          <h4>播客三年：中文播客圈的商业化和它的天花板</h4>
+          <div class="m">文化 · 林小溪 · 昨天 · 754 阅读</div>
+        </div>
+      </div>
+      <div class="list-card">
+        <div class="ph" style="background:linear-gradient(140deg,#4c5e8a,#1c243d)"></div>
+        <div>
+          <h4>小团队如何做出被 10 万人使用的开源工具</h4>
+          <div class="m">科技 · 苏晚 · 昨天 · 668 阅读</div>
+        </div>
+      </div>
+      <div class="list-card">
+        <div class="ph" style="background:linear-gradient(140deg,#5f8a7a,#1c3d33)"></div>
+        <div>
+          <h4>菜市场里的经济学：摊主们的利润是怎么算出来的</h4>
+          <div class="m">生活 · 编辑部 · 2 天前 · 590 阅读</div>
+        </div>
+      </div>
+    </main>
+
+    <!-- 侧栏 -->
+    <aside class="side">
+      <div class="box">
+        <div class="bt">本周趋势</div>
+        <div class="trend">
+          <div class="t"><div><h4>城市"去高架化"运动</h4><div class="n">3.2 万热度</div></div></div>
+          <div class="t"><div><h4>AI 办公焦虑症</h4><div class="n">2.8 万热度</div></div></div>
+          <div class="t"><div><h4>县城实体书店复活</h4><div class="n">2.1 万热度</div></div></div>
+          <div class="t"><div><h4>野奢露营升级</h4><div class="n">1.7 万热度</div></div></div>
+          <div class="t"><div><h4>会员制超市混战</h4><div class="n">1.4 万热度</div></div></div>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="bt">编辑推荐</div>
+        <div class="wlist">
+          <div class="w"><div class="ph" style="background:linear-gradient(140deg,#7a4c8a,#2b1c3d)"></div>
+            <div><h5>2026 年度阅读清单：编辑部私藏 20 本</h5><div class="m">阅读 · 2.3k</div></div></div>
+          <div class="w"><div class="ph" style="background:linear-gradient(140deg,#4c8a6b,#1c3d2b)"></div>
+            <div><h5>专访：把旧厂房改造成社区美术馆的年轻人</h5><div class="m">人物 · 1.9k</div></div></div>
+          <div class="w"><div class="ph" style="background:linear-gradient(140deg,#8a4c4c,#3d1c1c)"></div>
+            <div><h5>数据图解：中国通勤时间最长的 20 座城市</h5><div class="m">数据 · 1.6k</div></div></div>
+        </div>
+      </div>
+
+      <div class="box">
+        <div class="bt">标签</div>
+        <div class="tags">
+          <span>#城市</span><span>#AI</span><span>#消费</span><span>#开源</span><span>#播客</span>
+          <span>#数据</span><span>#人物</span><span>#书店</span><span>#露营</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- 页脚 -->
+<footer>
+  <div class="wrap f-grid">
+    <div>
+      <div class="logo" style="color:#fff"><span class="mark" style="background:linear-gradient(135deg,#6366f1,#a855f7)"></span>新知周刊</div>
+      <p style="margin:14px 0;line-height:1.8">深度、克制、有温度的周更数字杂志。每周日更新，聚焦科技、商业、文化与城市生活。</p>
+    </div>
+    <div><h4>栏目</h4><a href="#">深度</a><a href="#">科技</a><a href="#">商业</a><a href="#">文化</a><a href="#">生活</a></div>
+    <div><h4>服务</h4><a href="#">订阅</a><a href="#">投稿</a><a href="#">合作</a><a href="#">联系我们</a></div>
+    <div><h4>关于</h4><a href="#">关于我们</a><a href="#">编辑部</a><a href="#">版权声明</a><a href="#">隐私政策</a></div>
+  </div>
+  <div class="f-bottom">© 2026 新知周刊 · 模板 D 主页线框 · 仅供方案参考</div>
+</footer>
+
+<script>
+  // 轮播：自动播放 + 点击切换
+  (function(){
+    var slides = document.querySelectorAll('.slide');
+    var dotsBox = document.getElementById('dots');
+    var idx = 0, timer;
+    slides.forEach(function(_, i){
+      var d = document.createElement('i');
+      if(i === 0) d.className = 'on';
+      d.onclick = function(){ go(i); restart(); };
+      dotsBox.appendChild(d);
+    });
+    var dots = dotsBox.children;
+    function go(n){
+      slides[idx].classList.remove('on');
+      dots[idx].classList.remove('on');
+      idx = (n + slides.length) % slides.length;
+      slides[idx].classList.add('on');
+      dots[idx].classList.add('on');
+    }
+    function restart(){ clearInterval(timer); timer = setInterval(function(){ go(idx+1); }, 5000); }
+    restart();
+  })();
+</script>
+
+</body>
+</html>

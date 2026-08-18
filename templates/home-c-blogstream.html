@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模板 C · 博客流主页（参考 Vegas Newser）</title>
+<style>
+  :root{
+    --ink:#20242a; --muted:#7b828c; --line:#e7e9ee; --accent:#e4572e; --bg:#f6f7f9; --card:#fff;
+    --sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    --serif:Georgia,"Songti SC","SimSun",serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg)}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+
+  /* ---------- 头部 ---------- */
+  header{background:var(--card);border-bottom:1px solid var(--line)}
+  .head-row{display:flex;align-items:center;gap:24px;padding:18px 0}
+  .logo{font-size:24px;font-weight:800;letter-spacing:1px}
+  .logo span{color:var(--accent)}
+  .head-row .sub{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}
+  .head-row .sub::before{content:"";width:1px;height:16px;background:var(--line)}
+  .head-row .search{margin-left:auto;display:flex}
+  .head-row input{padding:8px 14px;border:1px solid var(--line);border-radius:18px 0 0 18px;outline:none;font-size:13px;width:220px}
+  .head-row button{border:none;background:var(--ink);color:#fff;border-radius:0 18px 18px 0;padding:0 16px;cursor:pointer}
+
+  /* 标签导航（pills） */
+  nav.tags-nav{border-top:1px solid var(--line);padding:12px 0}
+  nav.tags-nav .wrap{display:flex;gap:10px;flex-wrap:wrap}
+  nav.tags-nav a{font-size:13px;padding:6px 16px;border-radius:16px;background:#f0f1f4;color:#4a4f58;transition:.2s}
+  nav.tags-nav a:hover{background:var(--accent);color:#fff}
+  nav.tags-nav a.active{background:var(--ink);color:#fff}
+
+  /* ---------- 推荐横幅（可选小块） ---------- */
+  .featured-banner{background:linear-gradient(120deg,#1c2b3a,#33536e);border-radius:10px;margin:26px 0 6px;color:#fff;
+    display:grid;grid-template-columns:1fr 1.4fr;overflow:hidden;cursor:pointer}
+  .featured-banner .ph{min-height:220px;background:linear-gradient(140deg,#5f7d9e,#22344d);position:relative}
+  .featured-banner .ph .glyph{position:absolute;right:10%;bottom:-4%;font-size:130px;opacity:.3;font-family:var(--serif)}
+  .featured-banner .txt{padding:34px;display:flex;flex-direction:column;justify-content:center;gap:10px}
+  .featured-banner .kicker{display:inline-block;background:var(--accent);font-size:12px;padding:3px 10px;border-radius:3px;align-self:flex-start}
+  .featured-banner h2{font-family:var(--serif);font-size:26px;line-height:1.4}
+  .featured-banner p{color:#c8d4e0;font-size:14px;line-height:1.7}
+
+  /* ---------- 两栏 ---------- */
+  .cols{display:grid;grid-template-columns:1fr 320px;gap:30px;padding:24px 0 40px;align-items:start}
+
+  /* ---------- 文章列表 ---------- */
+  .stream-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+  .stream-head h2{font-size:18px;font-weight:800}
+  .stream-head .count{font-size:12px;color:var(--muted)}
+  .post{border:1px solid var(--line);border-radius:8px;background:var(--card);margin-bottom:16px;overflow:hidden;cursor:pointer;transition:.2s;display:grid;grid-template-columns:190px 1fr}
+  .post:hover{box-shadow:0 8px 22px rgba(0,0,0,.08);transform:translateY(-2px)}
+  .post .ph{min-height:130px;position:relative}
+  .post .ph .glyph{position:absolute;right:8%;bottom:-4%;font-size:80px;opacity:.25;font-family:var(--serif)}
+  .post .info{padding:16px 18px}
+  .post .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:12px;color:var(--muted);margin-bottom:8px}
+  .post .meta .dot{width:3px;height:3px;border-radius:50%;background:#c3c7cf}
+  .post .meta b{color:var(--accent);font-weight:700}
+  .post h3{font-family:var(--serif);font-size:17px;line-height:1.45;margin-bottom:6px}
+  .post h3:hover{color:var(--accent)}
+  .post .ex{font-size:13px;color:var(--muted);line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .post .tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+  .post .tags span{font-size:11px;background:#f0f1f4;color:#5a5f68;padding:3px 10px;border-radius:12px}
+
+  /* ---------- 分页 ---------- */
+  .pager{display:flex;gap:8px;justify-content:center;margin:26px 0 10px}
+  .pager a{width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--card);border-radius:8px;font-size:14px}
+  .pager a:hover{border-color:var(--accent);color:var(--accent)}
+  .pager a.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .pager .next{width:auto;padding:0 16px}
+
+  /* ---------- 侧栏 ---------- */
+  .side{position:sticky;top:16px}
+  .box{border:1px solid var(--line);border-radius:8px;background:var(--card);margin-bottom:20px;overflow:hidden}
+  .box .bt{padding:13px 18px;font-weight:800;font-size:15px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+  .box .bt::before{content:"";width:4px;height:16px;background:var(--accent);border-radius:2px}
+  .about{padding:20px 18px;text-align:center}
+  .about .avatar{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;background:linear-gradient(140deg,#e4572e,#f2a03d);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:800}
+  .about p{font-size:13px;color:var(--muted);line-height:1.7;margin-top:8px}
+  .about .btn{display:inline-block;margin-top:12px;background:var(--ink);color:#fff;font-size:13px;padding:8px 20px;border-radius:18px}
+  .pop li{display:flex;gap:12px;padding:11px 18px;border-bottom:1px dashed var(--line);cursor:pointer}
+  .pop li:last-child{border-bottom:none}
+  .pop .no{font-family:var(--serif);font-size:19px;font-weight:800;color:#d8dbe0;min-width:24px}
+  .pop li:nth-child(-n+3) .no{color:var(--accent)}
+  .pop h4{font-size:13.5px;line-height:1.45;font-weight:600}
+  .pop .n{font-size:11px;color:var(--muted);margin-top:2px}
+  .box .tags{padding:14px 18px;display:flex;flex-wrap:wrap;gap:8px}
+  .box .tags span{font-size:12px;background:#f0f1f4;padding:5px 12px;border-radius:14px;cursor:pointer}
+  .box .tags span:hover{background:var(--accent);color:#fff}
+  .sub{padding:20px 18px}
+  .sub h4{font-size:15px;margin-bottom:6px}
+  .sub p{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+  .sub .row{display:flex}
+  .sub input{flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:6px 0 0 6px;outline:none;font-size:13px}
+  .sub button{border:none;background:var(--accent);color:#fff;border-radius:0 6px 6px 0;padding:0 14px;cursor:pointer}
+
+  /* ---------- 页脚 ---------- */
+  footer{background:#171a20;color:#9aa1ad;font-size:13px}
+  .f-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;padding:26px 0;align-items:center}
+  .f-row .logo{color:#fff;font-size:20px}
+  .f-links{display:flex;gap:18px}
+  .f-links a{color:#9aa1ad}
+  .f-links a:hover{color:#fff}
+
+  @media(max-width:900px){
+    .cols{grid-template-columns:1fr}
+    .side{position:static}
+    .post{grid-template-columns:1fr}
+    .post .ph{min-height:180px}
+    .featured-banner{grid-template-columns:1fr}
+    .head-row .sub{display:none}
+    .head-row input{width:150px}
+  }
+</style>
+</head>
+<body>
+
+<!-- 头部 -->
+<header>
+  <div class="wrap head-row">
+    <div class="logo">维加斯<span>新鲜报</span></div>
+    <div class="sub">拉斯维加斯本地新闻 · 每日更新</div>
+    <div class="search"><input placeholder="搜索本站文章…"><button>🔍</button></div>
+  </div>
+  <nav class="tags-nav">
+    <div class="wrap">
+      <a class="active" href="#">全部</a><a href="#">拉斯维加斯</a><a href="#">内华达</a><a href="#">博彩行业</a>
+      <a href="#">娱乐演出</a><a href="#">美食</a><a href="#">夜生活</a><a href="#">旅游</a><a href="#">商业</a><a href="#">犯罪记录</a>
+    </div>
+  </nav>
+</header>
+
+<div class="wrap">
+
+  <!-- 推荐横幅 -->
+  <div class="featured-banner">
+    <div class="ph"><span class="glyph">★</span></div>
+    <div class="txt">
+      <span class="kicker">主编推荐</span>
+      <h2>超级碗周末的拉斯维加斯：一座城市的狂欢经济学</h2>
+      <p>从机场到赌场大道，从酒店房价到酒吧营业时间——我们把这场年度盛事对维加斯的真实影响算了一遍。</p>
+    </div>
+  </div>
+
+  <!-- 两栏 -->
+  <div class="cols">
+
+    <!-- 文章流 -->
+    <main class="stream">
+      <div class="stream-head"><h2>最新报道</h2><span class="count">共 1,286 篇</span></div>
+
+      <article class="post">
+        <div class="ph" style="background:linear-gradient(140deg,#8a4c3d,#3d1c14)"><span class="glyph">♠</span></div>
+        <div class="info">
+          <div class="meta"><b>博彩行业</b><span class="dot"></span><span>2 小时前</span><span class="dot"></span><span>作者：老城专栏</span></div>
+          <h3>新赌场开业第一周：客流量创 Strip 十年新高</h3>
+          <p class="ex">位于南大道的最新度假村综合体开业首周即接待超过 40 万名访客，多家机构上调其全年营收预期。</p>
+          <div class="tags"><span>#赌场</span><span>#旅游</span><span>#商业</span></div>
+        </div>
+      </article>
+
+      <article class="post">
+        <div class="ph" style="background:linear-gradient(140deg,#4c6b8a,#1c2b3d)"><span class="glyph">♪</span></div>
+        <div class="info">
+          <div class="meta"><b>娱乐演出</b><span class="dot"></span><span>5 小时前</span><span class="dot"></span><span>作者：剧场观察员</span></div>
+          <h3>本周演出指南：驻场秀、拳击夜与露天音乐节</h3>
+          <p class="ex">从太阳马戏团新秀到老牌爵士俱乐部，本周维加斯有超过 60 场演出，我们帮你划好了重点。</p>
+          <div class="tags"><span>#演出</span><span>#夜生活</span></div>
+        </div>
+      </article>
+
+      <article class="post">
+        <div class="ph" style="background:linear-gradient(140deg,#5f8a4c,#243d1c)"><span class="glyph">☕</span></div>
+        <div class="info">
+          <div class="meta"><b>美食</b><span class="dot"></span><span>昨天 22:10</span><span class="dot"></span><span>作者：吃货小分队</span></div>
+          <h3>唐人街扩张记：十家新店开业，从早茶到深夜烧烤</h3>
+          <p class="ex">维加斯唐人街正在经历十年来最大规模的一轮扩张，我们实地探访了其中最值得去的十家。</p>
+          <div class="tags"><span>#美食</span><span>#唐人街</span></div>
+        </div>
+      </article>
+
+      <article class="post">
+        <div class="ph" style="background:linear-gradient(140deg,#8a7a4c,#3d3520)"><span class="glyph">♣</span></div>
+        <div class="info">
+          <div class="meta"><b>拉斯维加斯</b><span class="dot"></span><span>昨天 18:45</span><span class="dot"></span><span>作者：城市编辑部</span></div>
+          <h3>市政府批准轻轨扩建计划：机场至 Strip 全线贯通</h3>
+          <p class="ex">总投资 45 亿美元的项目预计 2029 年通车，将显著缓解赌场大道的高峰拥堵。</p>
+          <div class="tags"><span>#交通</span><span>#城市</span></div>
+        </div>
+      </article>
+
+      <article class="post">
+        <div class="ph" style="background:linear-gradient(140deg,#4c5e8a,#1c243d)"><span class="glyph">♦</span></div>
+        <div class="info">
+          <div class="meta"><b>商业</b><span class="dot"></span><span>2 天前</span><span class="dot"></span><span>作者：商业观察</span></div>
+          <h3>植物基饮食如何重塑维加斯的酒店菜单</h3>
+          <p class="ex">从米其林餐厅到自助餐吧，植物基选项正成为各大酒店吸引年轻客群的新武器。</p>
+          <div class="tags"><span>#餐饮</span><span>#趋势</span></div>
+        </div>
+      </article>
+
+      <!-- 分页 -->
+      <div class="pager">
+        <a href="#">‹</a><a class="on" href="#">1</a><a href="#">2</a><a href="#">3</a><a href="#">4</a><a href="#">5</a>
+        <a class="next" href="#">下一页 ›</a>
+      </div>
+    </main>
+
+    <!-- 侧栏 -->
+    <aside class="side">
+      <div class="box about">
+        <div class="avatar">V</div>
+        <b>维加斯新鲜报</b>
+        <p>本地独立新闻博客，关注拉斯维加斯与内华达州的犯罪、商业、娱乐与生活方式。</p>
+        <a class="btn" href="#">关于我们</a>
+      </div>
+
+      <div class="box">
+        <div class="bt">热门文章</div>
+        <ol class="pop">
+          <li><span class="no">1</span><div><h4>Strip 上的酒店房价十年变迁：一张图看懂</h4><div class="n">4.8 万阅读</div></div></li>
+          <li><span class="no">2</span><div><h4>维加斯最被低估的十家本地餐厅</h4><div class="n">3.9 万阅读</div></div></li>
+          <li><span class="no">3</span><div><h4>F1 大奖赛给维加斯带来了什么？</h4><div class="n">3.2 万阅读</div></div></li>
+          <li><span class="no">4</span><div><h4>赌场积分系统全解析：玩家必读</h4><div class="n">2.7 万阅读</div></div></li>
+        </ol>
+      </div>
+
+      <div class="box">
+        <div class="bt">标签云</div>
+        <div class="tags">
+          <span>#拉斯维加斯</span><span>#赌场</span><span>#演出</span><span>#美食</span><span>#内华达</span>
+          <span>#旅游</span><span>#夜生活</span><span>#商业</span><span>#犯罪</span><span>#F1</span><span>#酒店</span>
+        </div>
+      </div>
+
+      <div class="box sub">
+        <h4>订阅每日简报</h4>
+        <p>每天早上一封邮件，本地大事不错过。</p>
+        <div class="row"><input type="email" placeholder="you@example.com"><button>订阅</button></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- 页脚 -->
+<footer>
+  <div class="wrap f-row">
+    <div class="logo">维加斯<span style="color:var(--accent)">新鲜报</span></div>
+    <div class="f-links">
+      <a href="#">关于</a><a href="#">投稿</a><a href="#">联系我们</a><a href="#">广告</a><a href="#">隐私</a>
+    </div>
+    <span>© 2026 维加斯新鲜报 · 模板 C 主页线框 · 仅供方案参考</span>
+  </div>
+</footer>
+
+</body>
+</html>

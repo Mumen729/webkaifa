@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>模板 A · 杂志风主页（参考 Amazing Architecture）</title>
+<style>
+  :root{
+    --ink:#1a1a1a; --muted:#7a7a7a; --line:#e9e6e0; --accent:#b3282d;
+    --bg:#faf9f6; --card:#fff;
+    --serif:Georgia,"Songti SC","STSong",serif;
+    --sans:-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--sans);color:var(--ink);background:var(--bg)}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px}
+
+  /* ---------- 顶部条 ---------- */
+  .topbar{background:#111;color:#ccc;font-size:12px}
+  .topbar .wrap{display:flex;justify-content:space-between;height:32px;align-items:center}
+  .topbar a{color:#ccc;margin-left:14px}
+  .topbar a:hover{color:#fff}
+
+  /* ---------- 头部 ---------- */
+  header{background:var(--card);border-bottom:1px solid var(--line)}
+  .header-inner{display:flex;align-items:center;gap:36px;padding:18px 0}
+  .logo{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:2px;white-space:nowrap}
+  .logo span{color:var(--accent)}
+  nav.main{flex:1;display:flex;gap:22px;font-size:14px}
+  nav.main a{color:#333;padding:6px 0;border-bottom:2px solid transparent}
+  nav.main a:hover{border-color:var(--accent);color:var(--accent)}
+  .header-actions{display:flex;gap:14px;align-items:center;font-size:14px;color:#555}
+  .search-btn{cursor:pointer;border:1px solid var(--line);border-radius:20px;padding:5px 14px}
+  .search-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+  /* ---------- 占位图 ---------- */
+  .ph{position:relative;overflow:hidden;background:#d7d2c8;color:#fff;display:flex}
+  .ph .chip{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+    font-size:11px;letter-spacing:1px;padding:4px 10px;border-radius:2px}
+  .ph .glyph{position:absolute;right:8%;bottom:-6%;font-size:110px;opacity:.28;font-family:var(--serif);line-height:1}
+
+  /* ---------- Hero ---------- */
+  .hero{display:grid;grid-template-columns:2fr 1fr;gap:18px;padding:26px 0}
+  .hero-main{position:relative;border-radius:4px;overflow:hidden;min-height:430px;cursor:pointer}
+  .hero-main .ph{position:absolute;inset:0}
+  .hero-main .meta{position:absolute;inset:auto 0 0 0;padding:90px 28px 24px;color:#fff;
+    background:linear-gradient(transparent,rgba(0,0,0,.85))}
+  .hero-main .cat{display:inline-block;background:var(--accent);font-size:12px;padding:3px 10px;border-radius:2px;margin-bottom:10px}
+  .hero-main h1{font-family:var(--serif);font-size:30px;line-height:1.35;margin-bottom:10px}
+  .hero-main .by{font-size:13px;opacity:.85}
+  .hero-side{display:flex;flex-direction:column;gap:18px}
+  .hero-side .item{position:relative;flex:1;border-radius:4px;overflow:hidden;cursor:pointer;min-height:0}
+  .hero-side .ph{position:absolute;inset:0}
+  .hero-side .meta{position:absolute;inset:auto 0 0 0;padding:40px 16px 12px;color:#fff;
+    background:linear-gradient(transparent,rgba(0,0,0,.8))}
+  .hero-side .cat{display:inline-block;background:var(--accent);font-size:10px;padding:2px 8px;border-radius:2px;margin-bottom:6px}
+  .hero-side h2{font-size:15px;line-height:1.4;font-family:var(--serif)}
+  .hero-side .time{font-size:11px;opacity:.8;margin-top:4px}
+
+  /* ---------- 区块标题 ---------- */
+  .sec{padding:10px 0 34px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);margin-bottom:18px;padding-bottom:8px}
+  .sec-head h2{font-family:var(--serif);font-size:22px}
+  .sec-head .more{margin-left:auto;font-size:13px;color:var(--muted)}
+  .sec-head .more:hover{color:var(--accent)}
+
+  /* ---------- 卡片网格 ---------- */
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden;transition:.25s;cursor:pointer}
+  .card:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(0,0,0,.09)}
+  .card .ph{height:170px}
+  .card .body{padding:14px 16px 16px}
+  .card .cat{font-size:11px;color:var(--accent);letter-spacing:1px;text-transform:uppercase}
+  .card h3{font-family:var(--serif);font-size:16.5px;line-height:1.45;margin:7px 0 9px}
+  .card .foot{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+
+  /* ---------- 横向专题滚动 ---------- */
+  .strip{display:grid;grid-auto-flow:column;grid-auto-columns:300px;gap:16px;overflow-x:auto;padding-bottom:10px}
+  .strip::-webkit-scrollbar{height:6px}
+  .strip::-webkit-scrollbar-thumb{background:#cfc9bd;border-radius:3px}
+  .scard{background:var(--card);border:1px solid var(--line);border-radius:4px;overflow:hidden;cursor:pointer;transition:.25s}
+  .scard:hover{box-shadow:0 8px 20px rgba(0,0,0,.1)}
+  .scard .ph{height:150px}
+  .scard .body{padding:12px 14px}
+  .scard h3{font-family:var(--serif);font-size:15px;line-height:1.4;margin-bottom:6px}
+  .scard .time{font-size:11px;color:var(--muted)}
+
+  /* ---------- 分类快捷入口 ---------- */
+  .cats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .catbox{position:relative;height:120px;border-radius:4px;overflow:hidden;cursor:pointer;color:#fff}
+  .catbox .ph{position:absolute;inset:0;transition:.3s}
+  .catbox:hover .ph{transform:scale(1.05)}
+  .catbox .label{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;
+    background:linear-gradient(transparent,rgba(0,0,0,.72))}
+  .catbox .label b{font-family:var(--serif);font-size:17px}
+  .catbox .label small{opacity:.8;font-size:12px}
+
+  /* ---------- 订阅条 ---------- */
+  .newsletter{background:#141414;color:#fff;padding:34px 0;margin-bottom:0}
+  .newsletter .wrap{display:flex;align-items:center;gap:26px}
+  .newsletter h3{font-family:var(--serif);font-size:20px;margin-bottom:4px}
+  .newsletter p{color:#aaa;font-size:13px}
+  .newsletter form{display:flex;flex:1;max-width:420px;margin-left:auto}
+  .newsletter input{flex:1;padding:11px 14px;border:1px solid #333;background:#1f1f1f;color:#fff;outline:none}
+  .newsletter button{padding:11px 22px;background:var(--accent);border:none;color:#fff;cursor:pointer;font-size:14px}
+
+  /* ---------- 页脚 ---------- */
+  footer{background:#0e0e0e;color:#9a9a9a;font-size:13px}
+  .footer-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:30px;padding:40px 0 26px}
+  .footer-grid h4{color:#fff;font-family:var(--serif);font-size:15px;margin-bottom:14px}
+  .footer-grid a{display:block;color:#9a9a9a;margin-bottom:8px}
+  .footer-grid a:hover{color:#fff}
+  .foot-bottom{border-top:1px solid #222;padding:16px 0;text-align:center;color:#666}
+
+  @media(max-width:900px){
+    .hero{grid-template-columns:1fr}
+    .grid4{grid-template-columns:repeat(2,1fr)}
+    .cats{grid-template-columns:repeat(2,1fr)}
+    .footer-grid{grid-template-columns:1fr 1fr}
+    nav.main{display:none}
+    .newsletter .wrap{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+
+<!-- 顶部条 -->
+<div class="topbar">
+  <div class="wrap">
+    <span>建筑 · 设计 · 城市 · 生活 — 全球建筑杂志</span>
+    <span><a href="#">登录</a><a href="#">注册</a><a href="#">投稿</a></span>
+  </div>
+</div>
+
+<!-- 头部 -->
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">环球<span>建筑志</span></div>
+    <nav class="main">
+      <a href="#">首页</a><a href="#">建筑项目</a><a href="#">室内设计</a><a href="#">景观城市</a>
+      <a href="#">未来建筑</a><a href="#">学生作品</a><a href="#">竞赛</a><a href="#">产品</a>
+    </nav>
+    <div class="header-actions"><span class="search-btn">🔍 搜索</span></div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="wrap hero">
+  <div class="hero-main">
+    <div class="ph" style="background:linear-gradient(150deg,#5b7a9d 0%,#2a3f5f 55%,#16253c 100%)">
+      <span class="glyph">⌂</span><span class="chip">住宅建筑</span>
+    </div>
+    <div class="meta">
+      <span class="cat">RESIDENTIAL</span>
+      <h1>河畔之家：悬浮于水岸的轻质木构住宅，重新定义湖景生活的可能性</h1>
+      <div class="by">AtelierM 建筑事务所 · 2 天前 · 阅读 3.2k</div>
+    </div>
+  </div>
+  <div class="hero-side">
+    <div class="item">
+      <div class="ph" style="background:linear-gradient(140deg,#9c8a6b,#4e4030)"><span class="glyph">▣</span><span class="chip">商业办公</span></div>
+      <div class="meta"><span class="cat">COMMERCIAL</span><h2>峡谷之丘：悬崖上的混合功能市场大厅</h2><div class="time">2 天前</div></div>
+    </div>
+    <div class="item">
+      <div class="ph" style="background:linear-gradient(140deg,#6b8f71,#2f4634)"><span class="glyph">⌂</span><span class="chip">室内设计</span></div>
+      <div class="meta"><span class="cat">INTERIOR</span><h2>光与木：东京 40㎡ 极小住宅的收纳魔法</h2><div class="time">3 天前</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 最新项目 -->
+<div class="wrap sec">
+  <div class="sec-head"><h2>最新发布</h2><a class="more" href="#">查看全部 →</a></div>
+  <div class="grid4">
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(150deg,#a5764f,#5d3a20)"><span class="glyph">⌂</span><span class="chip">住宅</span></div>
+      <div class="body">
+        <div class="cat">Residential</div>
+        <h3>里维拉天堂：布宜诺斯艾利斯夹缝中的庭院住宅</h3>
+        <div class="foot"><span>AtelierM</span><span>2 天前</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(150deg,#7a8f9c,#33424d)"><span class="glyph">▣</span><span class="chip">商业</span></div>
+      <div class="body">
+        <div class="cat">Commercial</div>
+        <h3>The Grove：本德市活力混合市场大厅设计</h3>
+        <div class="foot"><span>Hacker Architects</span><span>2 天前</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(150deg,#6f8f6f,#2c402c)"><span class="glyph">▤</span><span class="chip">文化</span></div>
+      <div class="body">
+        <div class="cat">Cultural</div>
+        <h3>谷仓学堂：越南 Bánh Chung 住宅与社区中心</h3>
+        <div class="foot"><span>SLA Architects</span><span>3 天前</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background:linear-gradient(150deg,#8f6f7a,#42303a)"><span class="glyph">⌂</span><span class="chip">景观</span></div>
+      <div class="body">
+        <div class="cat">Landscape</div>
+        <h3>沙丘别墅：与地形共生的沙漠住宅实践</h3>
+        <div class="foot"><span>Ark Architects</span><span>4 天前</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 精选专题横向滚动 -->
+<div class="wrap sec">
+  <div class="sec-head"><h2>精选专题</h2><a class="more" href="#">更多 →</a></div>
+  <div class="strip">
+    <div class="scard"><div class="ph" style="background:linear-gradient(140deg,#c0864b,#6b4522)"><span class="chip">专题</span></div><div class="body"><h3>2026 年全球摩天大楼年度盘点</h3><div class="time">本周专题</div></div></div>
+    <div class="scard"><div class="ph" style="background:linear-gradient(140deg,#5f7d9e,#24344d)"><span class="chip">专题</span></div><div class="body"><h3>木结构建筑的回归：技术与伦理</h3><div class="time">本周专题</div></div></div>
+    <div class="scard"><div class="ph" style="background:linear-gradient(140deg,#7a9e5f,#2c4022)"><span class="chip">专题</span></div><div class="body"><h3>小而美的 30㎡ 极限住宅图鉴</h3><div class="time">本周专题</div></div></div>
+    <div class="scard"><div class="ph" style="background:linear-gradient(140deg,#8e7a9e,#352a40)"><span class="chip">专题</span></div><div class="body"><h3>AI 生成建筑：创作者还是助手？</h3><div class="time">本周专题</div></div></div>
+    <div class="scard"><div class="ph" style="background:linear-gradient(140deg,#a06b5f,#4a2b22)"><span class="chip">专题</span></div><div class="body"><h3>校园建筑与教育空间的未来</h3><div class="time">本周专题</div></div></div>
+  </div>
+</div>
+
+<!-- 分类入口 -->
+<div class="wrap sec">
+  <div class="sec-head"><h2>按分类探索</h2></div>
+  <div class="cats">
+    <div class="catbox"><div class="ph" style="background:linear-gradient(150deg,#7a5b9e,#2f2340)"></div><div class="label"><b>住宅 Residential</b><small>24 篇</small></div></div>
+    <div class="catbox"><div class="ph" style="background:linear-gradient(150deg,#5b7a9e,#22334d)"></div><div class="label"><b>商业办公 Commercial</b><small>18 篇</small></div></div>
+    <div class="catbox"><div class="ph" style="background:linear-gradient(150deg,#7a9e5b,#2c4022)"></div><div class="label"><b>景观城市 Landscape</b><small>15 篇</small></div></div>
+    <div class="catbox"><div class="ph" style="background:linear-gradient(150deg,#a5764f,#5d3a20)"></div><div class="label"><b>未来建筑 Futuristic</b><small>12 篇</small></div></div>
+  </div>
+</div>
+
+<!-- 订阅 -->
+<div class="newsletter">
+  <div class="wrap">
+    <div><h3>订阅建筑周报</h3><p>每周一封邮件，精选全球建筑与设计项目。</p></div>
+    <form><input type="email" placeholder="输入你的邮箱…"><button>订阅</button></form>
+  </div>
+</div>
+
+<!-- 页脚 -->
+<footer>
+  <div class="wrap footer-grid">
+    <div>
+      <div class="logo" style="color:#fff">环球<span style="color:var(--accent)">建筑志</span></div>
+      <p style="margin:12px 0;line-height:1.7">专注全球建筑、室内、景观与城市设计的数字杂志。每日更新全球优秀项目与深度报道。</p>
+    </div>
+    <div><h4>分类</h4><a href="#">住宅建筑</a><a href="#">商业办公</a><a href="#">文化建筑</a><a href="#">室内设计</a></div>
+    <div><h4>链接</h4><a href="#">关于我们</a><a href="#">投稿指南</a><a href="#">联系我们</a><a href="#">广告合作</a></div>
+    <div><h4>标签</h4><a href="#">#木结构</a><a href="#">#极小住宅</a><a href="#">#城市更新</a><a href="#">#未来建筑</a></div>
+  </div>
+  <div class="foot-bottom">© 2026 环球建筑志 · 模板 A 主页线框 · 仅供方案参考</div>
+</footer>
+
+</body>
+</html>
