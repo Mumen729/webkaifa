@@ -12,30 +12,65 @@ fs.mkdirSync(defaultsDir, { recursive: true });
 
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36 AtlasBot/1.0';
 
+// Premium default covers: one consistent design system (architectural arch motif +
+// fine grid + soft glow + brand wordmark) across five elegant palettes.
 const VARIANTS = [
-  { from: '#5b7a9d', to: '#16253c', glyph: '⌂' },
-  { from: '#9c8a6b', to: '#4e4030', glyph: '▣' },
-  { from: '#6b8f71', to: '#2f4634', glyph: '⌁' },
-  { from: '#a5764f', to: '#5d3a20', glyph: '❋' },
-  { from: '#7a5b9e', to: '#2f2340', glyph: '✦' }
+  { from: '#16233f', to: '#31456e' }, // deep navy → indigo
+  { from: '#241f45', to: '#4c3d7a' }, // plum → violet
+  { from: '#0e3535', to: '#1f6b60' }, // deep teal → emerald
+  { from: '#3b2a1e', to: '#8a5a33' }, // espresso → bronze
+  { from: '#1e2834', to: '#42566c' }  // slate → steel
 ];
 
 function svgFor(v) {
   return `<svg xmlns="http://www.w3.org/2000/svg" width="750" height="450" viewBox="0 0 750 450">
-  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0" stop-color="${v.from}"/><stop offset="1" stop-color="${v.to}"/>
-  </linearGradient></defs>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="${v.from}"/>
+      <stop offset="1" stop-color="${v.to}"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.82" cy="0.12" r="1">
+      <stop offset="0" stop-color="rgba(255,255,255,0.16)"/>
+      <stop offset="0.55" stop-color="rgba(255,255,255,0.04)"/>
+      <stop offset="1" stop-color="rgba(255,255,255,0)"/>
+    </radialGradient>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M30 0H0V30" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
   <rect width="750" height="450" fill="url(#g)"/>
-  <text x="702" y="408" font-family="Georgia, serif" font-size="250" fill="rgba(255,255,255,0.22)" text-anchor="end">${v.glyph}</text>
-  <text x="38" y="414" font-family="Georgia, serif" font-size="32" fill="rgba(255,255,255,0.85)" letter-spacing="8">ATLAS</text>
+  <rect width="750" height="450" fill="url(#grid)"/>
+  <rect width="750" height="450" fill="url(#glow)"/>
+
+  <!-- architectural arch motif -->
+  <g transform="translate(505 55)" opacity="0.18">
+    <path d="M0 340 V150 a115 115 0 0 1 230 0 V340" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <path d="M20 340 V150 a95 95 0 0 1 190 0 V340" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+    <path d="M115 20 V35" stroke="#ffffff" stroke-width="1.5"/>
+    <line x1="40" y1="150" x2="190" y2="150" stroke="#ffffff" stroke-width="0.8" opacity="0.7"/>
+    <line x1="30" y1="200" x2="200" y2="200" stroke="#ffffff" stroke-width="0.8" opacity="0.55"/>
+    <line x1="24" y1="250" x2="206" y2="250" stroke="#ffffff" stroke-width="0.8" opacity="0.4"/>
+    <line x1="18" y1="300" x2="212" y2="300" stroke="#ffffff" stroke-width="0.8" opacity="0.25"/>
+  </g>
+
+  <!-- small accent squares (city grid) -->
+  <g fill="rgba(255,255,255,0.10)">
+    <rect x="120" y="60" width="9" height="9"/>
+    <rect x="150" y="60" width="9" height="9"/>
+    <rect x="135" y="88" width="9" height="9"/>
+  </g>
+
+  <text x="40" y="402" font-family="Georgia, 'Times New Roman', serif" font-size="36" letter-spacing="12" fill="rgba(255,255,255,0.96)">ATLAS</text>
+  <text x="43" y="428" font-family="Arial, Helvetica, sans-serif" font-size="11" letter-spacing="5" fill="rgba(255,255,255,0.55)">NEWS &amp; ARCHITECTURE</text>
 </svg>`;
 }
 
-/** Write the branded default-cover SVGs once. */
+/** Write the branded default-cover SVGs (always regenerated with the latest design). */
 export function ensureDefaultCovers() {
   VARIANTS.forEach((v, i) => {
     const file = path.join(defaultsDir, `default-${i + 1}.svg`);
-    if (!fs.existsSync(file)) fs.writeFileSync(file, svgFor(v), 'utf8');
+    fs.writeFileSync(file, svgFor(v), 'utf8');
   });
 }
 

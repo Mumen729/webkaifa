@@ -4,16 +4,14 @@ import api from '../api/client.js';
 import Cover from './Cover.jsx';
 import { timeAgo } from '../utils/format.js';
 
-/** Sticky news sidebar: most read, categories, tags, subscribe. */
+/** Sticky news sidebar: most read, tags, subscribe. */
 export default function Sidebar() {
   const [most, setMost] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
 
   useEffect(() => {
     api.get('/posts', { params: { sort: 'views', limit: 5 } })
       .then(r => setMost(r.data.items || [])).catch(() => {});
-    api.get('/categories').then(r => setCategories(r.data)).catch(() => {});
     api.get('/tags').then(r => setTags((r.data || []).slice(0, 14))).catch(() => {});
   }, []);
 
@@ -33,20 +31,6 @@ export default function Sidebar() {
               </li>
             ))}
           </ol>
-        </div>
-      )}
-
-      {categories.length > 0 && (
-        <div className="sbox">
-          <div className="bt">Categories</div>
-          <div className="scat">
-            {categories.slice(0, 10).map(c => (
-              <Link key={c.id} to={`/category/${c.slug}`}>
-                {c.name}
-                <span>{c.post_count}</span>
-              </Link>
-            ))}
-          </div>
         </div>
       )}
 
