@@ -114,20 +114,24 @@ export default function Home() {
   if (!data) return <div className="loading"><div className="spinner" /><p>Loading…</p></div>;
 
   const { featured, latest, trending, categories } = data;
-  const slides = featured.length >= 3 ? featured.slice(0, 5) : (latest.length ? [featured[0] || latest[0], ...latest.slice(0, 3).filter(p => p.id !== (featured[0] || {}).id)] : []);
-  const heroSide = featured.slice(3, 5).length ? featured.slice(3, 5) : latest.slice(4, 6);
-  const side = heroSide.length >= 2 ? heroSide : latest.slice(2, 4);
+  // dedupe by id — the feed must never show the same article twice
+  const uniqById = (arr) => [...new Map((arr || []).map(x => [x.id, x])).values()];
+  const latestU = uniqById(latest);
+  const slides = featured.length >= 3 ? featured.slice(0, 5) : (latestU.length ? [featured[0] || latestU[0], ...latestU.slice(0, 3).filter(p => p.id !== (featured[0] || {}).id)] : []);
+  const heroSide = featured.slice(3, 5).length ? featured.slice(3, 5) : latestU.slice(4, 6);
+  const side = uniqById(heroSide.length >= 2 ? heroSide : latestU.slice(2, 4));
+  const slidesU = uniqById(slides);
 
   // articles shown in the hero (slider + side cards) must not repeat in the grid below
-  const heroIds = new Set([...slides, ...side].map(s => s.id));
-  const latestGrid = latest.filter(p => !heroIds.has(p.id));
+  const heroIds = new Set([...slidesU, ...side].map(s => s.id));
+  const latestGrid = latestU.filter(p => !heroIds.has(p.id));
 
   return (
     <>
       {/* hero */}
-      {slides.length > 0 && (
+      {slidesU.length > 0 && (
         <div className="wrap hero">
-          <HeroSlider slides={slides} />
+          <HeroSlider slides={slidesU} />
           <div className="hero-side">
             {side.map(p => (
               <Link key={p.id} className="item" to={`/post/${p.slug}`}>

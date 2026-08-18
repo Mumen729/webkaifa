@@ -30,10 +30,8 @@ upsertUser('admin', 'admin123', 'Site Admin', 'admin', 'Managing editor of Atlas
 upsertUser('editor', 'editor123', 'Atlas Editorial', 'editor', 'The Atlas news desk.');
 
 // ---------- categories ----------
-// Press Releases is where the site's own submitted/uploaded content lives;
-// everything crawled from external sites goes into the other categories.
-upsertCategory('Press Releases', 'press-releases', 'Announcements, press materials and submissions from our own news desk and partners.', 1);
-upsertCategory('Architecture', 'architecture', 'Buildings, projects and practice from around the world.', 2);
+// everything crawled from external sites goes into the categories below.
+upsertCategory('Architecture', 'architecture', 'Buildings, projects and practice from around the world.', 1);
 upsertCategory('World News', 'world-news', 'Breaking news and global current affairs.', 3);
 upsertCategory('Technology', 'technology', 'Science, tech and innovation.', 4);
 upsertCategory('Business', 'business', 'Markets, companies and the economy.', 5);
