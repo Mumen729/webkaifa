@@ -4,6 +4,7 @@ import api from '../api/client.js';
 import NewsRow from '../components/NewsRow.jsx';
 import Pagination from '../components/Pagination.jsx';
 import Sidebar from '../components/Sidebar.jsx';
+import { setSEO } from '../utils/seo.js';
 
 export default function AuthorPage() {
   const { id } = useParams();
@@ -19,6 +20,10 @@ export default function AuthorPage() {
       .then(r => setAuthor(r.data))
       .catch(e => setError(e.response?.data?.error || e.message));
   }, [id, page]);
+
+  useEffect(() => {
+    if (author) setSEO(author.display_name, author.bio || '');
+  }, [author]);
 
   useEffect(() => {
     if (!author) return;

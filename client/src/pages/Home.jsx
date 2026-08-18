@@ -5,6 +5,7 @@ import Cover from '../components/Cover.jsx';
 import PostCard from '../components/PostCard.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import { timeAgo, fmtViews } from '../utils/format.js';
+import { setSEO } from '../utils/seo.js';
 
 function HeroSlider({ slides }) {
   const [idx, setIdx] = useState(0);
@@ -89,7 +90,10 @@ export default function Home() {
   const [catPosts, setCatPosts] = useState({});
 
   useEffect(() => {
-    api.get('/settings/home').then(r => setData(r.data)).catch(e => setError(e.message));
+    api.get('/settings/home').then(r => {
+      setData(r.data);
+      setSEO('', r.data.settings?.site_tagline || '');
+    }).catch(e => setError(e.message));
   }, []);
 
   // fetch per-category posts for the section blocks

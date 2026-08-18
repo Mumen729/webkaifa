@@ -4,6 +4,7 @@ import api from '../api/client.js';
 import NewsRow from '../components/NewsRow.jsx';
 import Pagination from '../components/Pagination.jsx';
 import Sidebar from '../components/Sidebar.jsx';
+import { setSEO } from '../utils/seo.js';
 
 export default function CategoryPage() {
   const { slug } = useParams();
@@ -19,6 +20,7 @@ export default function CategoryPage() {
   }, [slug, page]);
 
   const title = slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  useEffect(() => { setSEO(`${title} News`, `All stories in ${title}.`); }, [title]);
 
   return (
     <>

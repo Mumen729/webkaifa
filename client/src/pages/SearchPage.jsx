@@ -4,12 +4,15 @@ import api from '../api/client.js';
 import NewsRow from '../components/NewsRow.jsx';
 import Pagination from '../components/Pagination.jsx';
 import Sidebar from '../components/Sidebar.jsx';
+import { setSEO } from '../utils/seo.js';
 
 export default function SearchPage() {
   const [sp] = useSearchParams();
   const q = sp.get('q') || '';
   const page = parseInt(sp.get('page') || '1', 10);
   const [data, setData] = useState(null);
+
+  useEffect(() => { setSEO(q ? `Search: ${q}` : 'Search', 'Search Atlas stories.'); }, [q]);
 
   useEffect(() => {
     if (!q.trim()) { setData({ items: [], total: 0, page: 1, pages: 1 }); return; }

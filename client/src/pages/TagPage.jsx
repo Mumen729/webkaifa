@@ -4,12 +4,15 @@ import api from '../api/client.js';
 import NewsRow from '../components/NewsRow.jsx';
 import Pagination from '../components/Pagination.jsx';
 import Sidebar from '../components/Sidebar.jsx';
+import { setSEO } from '../utils/seo.js';
 
 export default function TagPage() {
   const { slug } = useParams();
   const [sp] = useSearchParams();
   const page = parseInt(sp.get('page') || '1', 10);
   const [data, setData] = useState(null);
+
+  useEffect(() => { setSEO(`#${slug}`, `Stories tagged ${slug}.`); }, [slug]);
 
   useEffect(() => {
     setData(null);

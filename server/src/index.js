@@ -3,6 +3,7 @@ import cors from 'cors';
 import path from 'node:path';
 import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { db } from './db.js';
 
 import postsRouter from './routes/posts.js';
 import categoriesRouter from './routes/categories.js';
@@ -32,6 +33,30 @@ app.use((req, _res, next) => {
 app.use('/uploads', express.static(uploadsDir, { maxAge: '7d' }));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
+
+// ---------- SEO: robots.txt + sitemap.xml ----------
+const SITE_URL = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/+$/, '');
+
+app.get('/robots.txt', (_req, res) => {
+  res.type('text/plain').send(`User-agent: *
+Allow: /
+Sitemap: ${SITE_URL}/sitemap.xml
+`);
+});
+
+app.get('/sitemap.xml', (_req, res) => {
+  const posts = db.prepare("SELECT slug FROM posts WHERE status='published' ORDER BY published_at DESC").all();
+  const cats = db.prepare('SELECT slug FROM categories').all();
+  const urls = [`${SITE_URL}/`];
+  for (const c of cats) urls.push(`${SITE_URL}/category/${c.slug}`);
+  for (const p of posts) urls.push(`${SITE_URL}/post/${p.slug}`);
+  const now = new Date().toISOString().slice(0, 10);
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map(u => `  <url><loc>${u}</loc><lastmod>${now}</lastmod></url>`).join('\n')}
+</urlset>`;
+  res.type('application/xml').send(xml);
+});
 
 app.use('/api/posts', postsRouter);
 app.use('/api/categories', categoriesRouter);

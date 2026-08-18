@@ -6,6 +6,7 @@ import PostCard from '../components/PostCard.jsx';
 import MarkdownView from '../components/MarkdownView.jsx';
 import Sidebar from '../components/Sidebar.jsx';
 import { fmtDate, fmtViews } from '../utils/format.js';
+import { setSEO, setArticleJsonLd } from '../utils/seo.js';
 
 export default function PostPage() {
   const { slug } = useParams();
@@ -19,6 +20,8 @@ export default function PostPage() {
     api.get(`/posts/${slug}`)
       .then(r => {
         setPost(r.data);
+        setSEO(r.data.title, r.data.excerpt || '');
+        setArticleJsonLd(r.data);
         return api.get(`/posts/${r.data.id}/related`);
       })
       .then(r => setRelated(r.data))
