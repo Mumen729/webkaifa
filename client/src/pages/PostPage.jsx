@@ -31,11 +31,24 @@ export default function PostPage() {
   if (error) return <div className="wrap"><div className="empty"><h3>Berita tidak dijumpai</h3><p>{error}</p></div></div>;
   if (!post) return <div className="loading"><div className="spinner" /><p>Memuatkan…</p></div>;
 
-  // The detail page already shows the cover above the body, so drop the first
-  // image inside the content to avoid duplicating it.
-  const bodyHtml = post.content_html
-    ? post.content_html.replace(/<img[^>]*>/i, '').replace(/<figure>\s*<\/figure>/gi, '')
-    : '';
+  // The detail page already shows the cover above the body, so drop any body
+  // image that is the same photo as the cover. Sources often embed the same
+  // photo multiple times in different sizes (e.g. "2-1024x682.jpg" and "2.jpg"),
+  // so we normalize file names and remove every occurrence of the first image.
+  const normImgName = (src) => {
+    const clean = String(src || '').split('?')[0].split('#')[0];
+    const base = clean.substring(clean.lastIndexOf('/') + 1).toLowerCase();
+    return base.replace(/-\d{2,4}x\d{2,4}(\.[a-z0-9]+)?$/, '$1');
+  };
+  const bodyHtml = (() => {
+    if (!post.content_html) return '';
+    const first = post.content_html.match(/<img[^>]+src=["']([^"']+)["']/i);
+    const key = first ? normImgName(first[1]) : '';
+    if (!key) return post.content_html;
+    return post.content_html
+      .replace(/<img[^>]+src=["']([^"']+)["']/gi, (m, src) => normImgName(src) === key ? '' : m)
+      .replace(/<figure>\s*<\/figure>/gi, '');
+  })();
   const bodyMd = post.content_md
     ? post.content_md.replace(/!\[[^\]]*\]\([^)]*\)/, '')
     : '';
