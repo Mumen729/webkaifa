@@ -47,10 +47,8 @@ const distDir = path.join(__dirname, '..', '..', 'client', 'dist');
 if (fs.existsSync(distDir)) {
   console.log(`[server] serving static frontend from ${distDir}`);
   app.use(express.static(distDir, {
-    maxAge: '1h',
+    maxAge: 0, // no caching during this phase — every visit gets the newest build
     setHeaders: (res, filePath) => {
-      // index.html must never be cached — it references hashed asset URLs,
-      // so stale index.html = stale app for visitors
       if (filePath.endsWith('index.html')) res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
   }));
