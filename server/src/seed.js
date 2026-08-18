@@ -30,20 +30,14 @@ upsertUser('admin', 'admin123', 'Site Admin', 'admin', 'Managing editor of Atlas
 upsertUser('editor', 'editor123', 'Atlas Editorial', 'editor', 'The Atlas news desk.');
 
 // ---------- categories ----------
-// everything crawled from external sites goes into the categories below.
+// only categories that actually carry content — no empty placeholder categories
 upsertCategory('Architecture', 'architecture', 'Buildings, projects and practice from around the world.', 1);
-upsertCategory('World News', 'world-news', 'Breaking news and global current affairs.', 3);
-upsertCategory('Technology', 'technology', 'Science, tech and innovation.', 4);
-upsertCategory('Business', 'business', 'Markets, companies and the economy.', 5);
-upsertCategory('Science', 'science', 'Research, discovery and the natural world.', 6);
-upsertCategory('Sports', 'sports', 'Sport and games from around the world.', 7);
-upsertCategory('Travel', 'travel', 'Destinations, escapes and the road less travelled.', 8);
-upsertCategory('Interior Design', 'interior-design', 'Spaces, materials and the art of the interior.', 9);
-upsertCategory('Landscape & Urbanism', 'landscape-urbanism', 'Cities, public space and the natural world.', 10);
-upsertCategory('Commercial & Offices', 'commercial-offices', 'Workplaces, retail and hospitality.', 11);
-upsertCategory('Skyscrapers', 'skyscrapers', 'Tall buildings and vertical urbanism.', 12);
-upsertCategory('Futuristic', 'futuristic', 'Experimental, conceptual and speculative design.', 13);
-upsertCategory('Products', 'products', 'Furniture, lighting and design objects.', 14);
+upsertCategory('World News', 'world-news', 'Breaking news and global current affairs.', 2);
+upsertCategory('Technology', 'technology', 'Science, tech and innovation.', 3);
+upsertCategory('Business', 'business', 'Markets, companies and the economy.', 4);
+upsertCategory('Science', 'science', 'Research, discovery and the natural world.', 5);
+upsertCategory('Sports', 'sports', 'Sport and games from around the world.', 6);
+upsertCategory('Travel', 'travel', 'Destinations, escapes and the road less travelled.', 7);
 
 // ---------- backfill covers ----------
 // any post without a cover gets a branded default cover
