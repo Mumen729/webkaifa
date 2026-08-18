@@ -34,7 +34,6 @@ function HeroSlider({ slides }) {
         <span className="cat">{(slides[idx].category_name || 'Warta').toUpperCase()}</span>
         <h1>{slides[idx].title}</h1>
         <div className="by">
-          <span>{slides[idx].author_name}</span>
           <span>{timeAgo(slides[idx].published_at)}</span>
           <span>{fmtViews(slides[idx].views)} paparan</span>
         </div>
@@ -67,13 +66,13 @@ function CategoryBlock({ category, posts }) {
           <span className="more">Baca lagi →</span>
         </Link>
         <div className="rows">
-          {rest.slice(0, 4).map(p => (
+          {rest.slice(0, 6).map(p => (
             <Link key={p.id} className="rrow" to={`/post/${p.slug}`}>
               <Cover src={p.cover_image} label="" glyph="▣" />
               <div>
                 <h4>{p.title}</h4>
                 <div className="m">
-                  {p.author_name} · {timeAgo(p.published_at)}
+                  {timeAgo(p.published_at)}
                 </div>
               </div>
             </Link>
@@ -179,7 +178,7 @@ export default function Home() {
                       <div className="cat">{p.category_name || 'Warta'}</div>
                       <h4>{p.title}</h4>
                       <div className="m">
-                        {p.author_name} · {timeAgo(p.published_at)} · {fmtViews(p.views)} paparan
+                        {timeAgo(p.published_at)} · {fmtViews(p.views)} paparan
                       </div>
                     </div>
                   </Link>

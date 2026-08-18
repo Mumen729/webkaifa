@@ -31,8 +31,6 @@ export default function PostPage() {
   if (error) return <div className="wrap"><div className="empty"><h3>Berita tidak dijumpai</h3><p>{error}</p></div></div>;
   if (!post) return <div className="loading"><div className="spinner" /><p>Memuatkan…</p></div>;
 
-  const initials = (post.author_name || 'A').slice(0, 2).toUpperCase();
-
   // The detail page already shows the cover above the body, so drop the first
   // image inside the content to avoid duplicating it.
   const bodyHtml = post.content_html
@@ -56,7 +54,6 @@ export default function PostPage() {
               <h1>{post.title}</h1>
               <div className="article-meta">
                 {post.category_name && <span className="chip">{post.category_name}</span>}
-                <span>Oleh <Link to={`/author/${post.author_id}`} style={{ color: 'var(--accent)' }}>{post.author_name}</Link></span>
                 <span>{fmtDate(post.published_at)}</span>
                 <span>{fmtViews(post.views)} paparan</span>
               </div>
@@ -72,18 +69,6 @@ export default function PostPage() {
                 {post.tags.map(t => <Link key={t.id || t.slug} to={`/tag/${t.slug}`}>#{t.name || t}</Link>)}
               </div>
             )}
-
-            <div className="author-box">
-              <div className="avatar">
-                {post.author_avatar
-                  ? <img src={post.author_avatar} alt="" onError={e => { e.target.style.display = 'none'; }} />
-                  : initials}
-              </div>
-              <div>
-                <Link to={`/author/${post.author_id}`}><b>{post.author_name}</b></Link>
-                <p>Penulis di Malaysia Times{post.author_username ? ` (@${post.author_username})` : ''}</p>
-              </div>
-            </div>
           </div>
 
           {related.length > 0 && (

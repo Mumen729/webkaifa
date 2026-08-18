@@ -12,7 +12,6 @@ export default function PostCard({ post, glyph = '▣' }) {
         <div className="cat">{post.category_name || 'Warta'}</div>
         <h3>{post.title}</h3>
         <div className="foot">
-          <span>{post.author_name}</span>
           <span>{timeAgo(post.published_at)}</span>
         </div>
       </div>
