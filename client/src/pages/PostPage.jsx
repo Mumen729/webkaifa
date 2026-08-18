@@ -30,6 +30,15 @@ export default function PostPage() {
 
   const initials = (post.author_name || 'A').slice(0, 2).toUpperCase();
 
+  // The detail page already shows the cover above the body, so drop the first
+  // image inside the content to avoid duplicating it.
+  const bodyHtml = post.content_html
+    ? post.content_html.replace(/<img[^>]*>/i, '').replace(/<figure>\s*<\/figure>/gi, '')
+    : '';
+  const bodyMd = post.content_md
+    ? post.content_md.replace(/!\[[^\]]*\]\([^)]*\)/, '')
+    : '';
+
   return (
     <div className="wrap" style={{ paddingTop: 22 }}>
       <div className="cols" style={{ paddingTop: 0 }}>
@@ -53,7 +62,7 @@ export default function PostPage() {
             <Cover src={post.cover_image} label={post.category_name || ''} glyph="◇"
               className="article-cover" style={{ height: 440 }} />
 
-            <MarkdownView md={post.content_md} html={post.content_html} />
+            <MarkdownView md={bodyMd} html={bodyHtml} />
 
             {post.tags?.length > 0 && (
               <div className="article-tags">
@@ -72,13 +81,6 @@ export default function PostPage() {
                 <p>Writer at Atlas{post.author_username ? ` (@${post.author_username})` : ''}</p>
               </div>
             </div>
-
-            {post.is_crawled && post.source_url && (
-              <div className="article-source">
-                <span>Syndicated from {post.source_name}</span>
-                <a href={post.source_url} target="_blank" rel="noreferrer">Read original ↗</a>
-              </div>
-            )}
           </div>
 
           {related.length > 0 && (

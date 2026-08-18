@@ -12,7 +12,7 @@ export default function NewsRow({ post }) {
         <div className="cat">{post.category_name || 'Atlas'}</div>
         <h4>{post.title}</h4>
         <div className="m">
-          {post.source_name ? `via ${post.source_name}` : post.author_name} · {timeAgo(post.published_at)}
+          {post.author_name} · {timeAgo(post.published_at)}
         </div>
       </div>
     </Link>

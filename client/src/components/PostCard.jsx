@@ -12,7 +12,7 @@ export default function PostCard({ post, glyph = '▣' }) {
         <div className="cat">{post.category_name || 'Atlas'}</div>
         <h3>{post.title}</h3>
         <div className="foot">
-          <span>{post.source_name ? `via ${post.source_name}` : post.author_name}</span>
+          <span>{post.author_name}</span>
           <span>{timeAgo(post.published_at)}</span>
         </div>
       </div>

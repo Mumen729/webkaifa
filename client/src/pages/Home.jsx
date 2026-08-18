@@ -33,7 +33,7 @@ function HeroSlider({ slides }) {
         <span className="cat">{(slides[idx].category_name || 'Atlas').toUpperCase()}</span>
         <h1>{slides[idx].title}</h1>
         <div className="by">
-          <span>{slides[idx].source_name ? `via ${slides[idx].source_name}` : slides[idx].author_name}</span>
+          <span>{slides[idx].author_name}</span>
           <span>{timeAgo(slides[idx].published_at)}</span>
           <span>{fmtViews(slides[idx].views)} views</span>
         </div>
@@ -72,7 +72,7 @@ function CategoryBlock({ category, posts }) {
               <div>
                 <h4>{p.title}</h4>
                 <div className="m">
-                  {p.source_name ? `via ${p.source_name}` : p.author_name} · {timeAgo(p.published_at)}
+                  {p.author_name} · {timeAgo(p.published_at)}
                 </div>
               </div>
             </Link>
@@ -167,7 +167,7 @@ export default function Home() {
                       <div className="cat">{p.category_name || 'Atlas'}</div>
                       <h4>{p.title}</h4>
                       <div className="m">
-                        {p.source_name ? `via ${p.source_name}` : p.author_name} · {timeAgo(p.published_at)} · {fmtViews(p.views)} views
+                        {p.author_name} · {timeAgo(p.published_at)} · {fmtViews(p.views)} views
                       </div>
                     </div>
                   </Link>
