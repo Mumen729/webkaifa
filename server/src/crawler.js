@@ -68,6 +68,10 @@ const LIMIT = limitArg ? parseInt(limitArg.split('=')[1], 10) : 10;
 // daily cap of NEW crawled posts per category (keeps each section fresh without flooding)
 const perCatArg = args.find(a => a.startsWith('--per-cat='));
 const PER_CAT_DAILY = perCatArg ? parseInt(perCatArg.split('=')[1], 10) : 5;
+// random view counts applied to imported posts (matches the site's backfilled range)
+const VIEWS_MIN = 1500;
+const VIEWS_MAX = 9800;
+const randomViews = () => VIEWS_MIN + Math.floor(Math.random() * (VIEWS_MAX - VIEWS_MIN + 1));
 // accept both "--source x" and "--source=x"
 const sourceIdx = args.indexOf('--source');
 const sourceArg = args.find(a => a.startsWith('--source=')) || (sourceIdx >= 0 ? `--source=${args[sourceIdx + 1]}` : undefined);
@@ -315,8 +319,8 @@ async function importTelegram(source) {
       db.prepare(
         `INSERT INTO posts (title, slug, excerpt, content_md, content_html, cover_image, category_id,
                             author_id, status, is_featured, is_top, views, source_url, source_name, published_at)
-         VALUES (?, ?, ?, ?, '', ?, ?, ?, 'published', 0, 0, 0, ?, ?, ?)`
-      ).run(title, slug, excerpt, content_md, cover, categoryId, crawlerUserId, link, source.name, published);
+         VALUES (?, ?, ?, ?, '', ?, ?, ?, 'published', 0, 0, ?, ?, ?, ?)`
+      ).run(title, slug, excerpt, content_md, cover, categoryId, crawlerUserId, randomViews(), link, source.name, published);
       inserted++;
     } catch (err) {
       if (String(err.message).includes('UNIQUE')) { skipped++; continue; }
@@ -414,8 +418,8 @@ async function importFeed(source) {
       const info = db.prepare(
         `INSERT INTO posts (title, slug, excerpt, content_md, content_html, cover_image, category_id,
                             author_id, status, is_featured, is_top, views, source_url, source_name, published_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'published', 0, 0, 0, ?, ?, ?)`
-      ).run(title, slug, excerpt, content_md, html, cover, categoryId, crawlerUserId,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'published', 0, 0, ?, ?, ?, ?)`
+      ).run(title, slug, excerpt, content_md, html, cover, categoryId, crawlerUserId, randomViews(),
             item.link, source.name, published);
 
       const tagNames = (item.categories || []).slice(0, 4).map(categoryName).filter(Boolean);
