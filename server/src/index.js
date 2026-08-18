@@ -29,7 +29,7 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.use('/uploads', express.static(uploadsDir, { maxAge: '1d' }));
+app.use('/uploads', express.static(uploadsDir, { maxAge: '7d' }));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true, ts: Date.now() }));
 
@@ -42,7 +42,22 @@ app.use('/api/auth', authRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api/admin', uploadRouter);
 
-app.use((req, res) => res.status(404).json({ error: `Not found: ${req.method} ${req.url}` }));
+// production: serve the built frontend (client/dist) with SPA fallback
+const distDir = path.join(__dirname, '..', '..', 'client', 'dist');
+if (fs.existsSync(distDir)) {
+  console.log(`[server] serving static frontend from ${distDir}`);
+  app.use(express.static(distDir, { maxAge: '1h' }));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
+    res.sendFile(path.join(distDir, 'index.html'));
+  });
+}
+
+app.use((req, res) => {
+  if (req.path.startsWith('/api')) return res.status(404).json({ error: `Not found: ${req.method} ${req.url}` });
+  res.status(404).send('Not found');
+});
+
 app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ error: err.message || 'Internal server error' });

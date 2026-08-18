@@ -9,7 +9,10 @@
     "dev:client": "npm --prefix client run dev",
     "seed": "npm --prefix server run seed",
     "crawl": "npm --prefix server run crawl",
-    "install:all": "npm --prefix server install && npm --prefix client install"
+    "install:all": "npm --prefix server install && npm --prefix client install",
+    "build": "npm --prefix client run build",
+    "start": "npm --prefix server run start",
+    "change-password": "node server/src/change-password.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0"
