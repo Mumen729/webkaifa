@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Layout from './components/Layout.jsx';
 import Home from './pages/Home.jsx';
+import LatestPage from './pages/LatestPage.jsx';
 import CategoryPage from './pages/CategoryPage.jsx';
 import TagPage from './pages/TagPage.jsx';
 import SearchPage from './pages/SearchPage.jsx';
@@ -31,6 +32,7 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
+          <Route path="/latest" element={<LatestPage />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
           <Route path="/tag/:slug" element={<TagPage />} />
           <Route path="/search" element={<SearchPage />} />

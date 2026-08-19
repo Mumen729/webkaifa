@@ -46,7 +46,35 @@ Sitemap: ${SITE_URL}/sitemap.xml
 });
 
 app.get('/sitemap.xml', (_req, res) => {
-  const posts = db.prepare("SELECT slug, published_at, updated_at FROM posts WHERE status='published' ORDER BY published_at DESC").all();
+  // Only hand-written posts are submitted to Google. Crawled articles
+  // (source_url NOT NULL) stay visible on the site but are excluded from the
+  // sitemap and marked noindex — duplicate content must not enter the index.
+  const posts = db.prepare(
+    "SELECT slug, published_at, updated_at FROM posts WHERE status='published' AND (source_url IS NULL OR source_url = '') ORDER BY published_at DESC"
+  ).all();
+  const cats = db.prepare('SELECT slug FROM categories ORDER BY sort_order').all();
+  const urls = [];
+  urls.push({ loc: `${SITE_URL}/`, lastmod: new Date().toISOString().slice(0, 10) });
+  for (const c of cats) urls.push({ loc: `${SITE_URL}/category/${c.slug}`, lastmod: new Date().toISOString().slice(0, 10) });
+  for (const p of posts) {
+    urls.push({
+      loc: `${SITE_URL}/post/${p.slug}`,
+      lastmod: (p.updated_at || p.published_at || '').slice(0, 10)
+    });
+  }
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`).join('\n')}
+</urlset>`;
+  res.type('application/xml').send(xml);
+});
+
+// alias so a fresh sitemap URL can be submitted to Search Console
+// (GSC never retries a "Couldn't fetch" entry; a new URL triggers a new fetch)
+app.get('/sitemap_index.xml', (_req, res) => {
+  const posts = db.prepare(
+    "SELECT slug, published_at, updated_at FROM posts WHERE status='published' AND (source_url IS NULL OR source_url = '') ORDER BY published_at DESC"
+  ).all();
   const cats = db.prepare('SELECT slug FROM categories ORDER BY sort_order').all();
   const urls = [];
   urls.push({ loc: `${SITE_URL}/`, lastmod: new Date().toISOString().slice(0, 10) });
@@ -87,6 +115,9 @@ function buildSeoHead(seo) {
   let out = '';
   out += `<title>${esc(t)}</title>\n`;
   if (d) out += `<meta name="description" content="${esc(d)}">\n`;
+  // crawled/imported articles are duplicates of content elsewhere on the web:
+  // keep them visible on the site but exclude them from Google's index
+  if (seo.noindex) out += `<meta name="robots" content="noindex, follow">\n`;
   out += `<meta property="og:site_name" content="${esc(seo.siteName || 'News')}">\n`;
   out += `<meta property="og:locale" content="ms_MY">\n`;
   out += `<meta property="og:type" content="${seo.type || 'website'}">\n`;
@@ -180,11 +211,12 @@ if (fs.existsSync(distDir)) {
   // compute SEO meta for article / category / home routes
   const seoByPath = new Map();
   for (const p of db.prepare(`
-    SELECT p.id, p.title, p.slug, p.excerpt, p.cover_image, p.published_at, p.updated_at, c.name AS category_name
+    SELECT p.id, p.title, p.slug, p.excerpt, p.cover_image, p.published_at, p.updated_at, p.source_url, c.name AS category_name
     FROM posts p LEFT JOIN categories c ON c.id = p.category_id
     WHERE p.status = 'published'
   `).all()) {
     const seo = seoForPost(p, p.category_name ? { name: p.category_name } : null);
+    seo.noindex = !!(p.source_url);
     seoByPath.set(`/post/${p.slug}`, buildSeoHead(seo));
   }
   for (const c of db.prepare('SELECT slug, name FROM categories').all()) {
@@ -198,18 +230,12 @@ if (fs.existsSync(distDir)) {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
     if (req.path.startsWith('/assets')) return next();
     if (/\.(js|css|png|jpg|jpeg|svg|ico|webp|gif|woff2?|txt|xml|map)$/i.test(req.path)) return next();
-    // never cache HTML — the bundle hash changes on every deploy, and stale
-    // index.html made browsers show old versions after fixes
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     const head = seoByPath.get(req.path) || seoByPath.get('/');
     res.send(injectSeo(indexHtml, head));
   });
 
   app.use(express.static(distDir, {
-    // hashed assets (index-*.js/css) are immutable — cache for a year;
-    // index.html is explicitly not cached below
-    maxAge: '1y',
-    immutable: true,
+    maxAge: 0, // no caching during this phase — every visit gets the newest build
     setHeaders: (res, filePath) => {
       if (filePath.endsWith('index.html')) res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     }
@@ -218,7 +244,6 @@ if (fs.existsSync(distDir)) {
   app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
     if (req.path.startsWith('/assets') || /\.(js|css|png|jpg|jpeg|svg|ico|webp|gif|woff2?|txt|xml|map)$/i.test(req.path)) return next();
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     const head = seoByPath.get(req.path) || seoByPath.get('/');
     res.send(injectSeo(indexHtml, head));
   });

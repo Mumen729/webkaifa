@@ -94,7 +94,7 @@ export default function AdminPosts() {
                       <td>{p.category_name || <span style={{ color: '#bbb' }}>—</span>}</td>
                       <td>
                         {p.is_crawled
-                          ? <span className="badge cat" title={`Imported from ${p.source_url || ''}`}>crawled{p.source_name ? ` · ${p.source_name}` : ''}</span>
+                          ? <span className="badge cat">crawled</span>
                           : <span style={{ color: '#bbb' }}>own</span>}
                       </td>
                       <td>{p.views.toLocaleString()}</td>

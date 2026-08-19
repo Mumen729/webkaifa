@@ -153,7 +153,7 @@ export default function Home() {
             <div className="sec-head">
               <span className="bar" />
               <h2>Berita Terkini</h2>
-              <Link className="more" to="/search">Lihat Semua →</Link>
+              <Link className="more" to="/latest">Lihat Semua →</Link>
             </div>
             <div className="grid4">
               {latestGrid.map(p => <PostCard key={p.id} post={p} />)}

@@ -36,10 +36,6 @@ export default function Layout() {
             <span className="date">{today}</span>
             <span className="tagline">{settings.site_tagline || 'Berita arkitektur, reka bentuk & dunia — dikemas kini setiap hari'}</span>
           </div>
-          <span>
-            <Link to="/admin/login">Log Masuk</Link>
-            <Link to="/admin">Meja Penerbitan</Link>
-          </span>
         </div>
       </div>
 
@@ -99,8 +95,6 @@ export default function Layout() {
             <h4>Terokai</h4>
             <Link to="/">Laman Utama</Link>
             <Link to="/search">Cari</Link>
-            <Link to="/admin/login">Log Masuk</Link>
-            <Link to="/admin">Meja Penerbitan</Link>
           </div>
           <div>
             <h4>Hubungi</h4>
