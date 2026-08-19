@@ -1,12 +1,12 @@
 {
-  "date": "2026-08-18",
+  "date": "2026-08-19",
   "perCat": {
     "World News": 5,
     "Business": 5,
     "Sports": 5,
+    "Science": 5,
     "Travel": 5,
     "Technology": 5,
-    "Architecture": 5,
-    "Science": 5
+    "Architecture": 5
   }
 }
