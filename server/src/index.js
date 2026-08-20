@@ -45,7 +45,8 @@ Sitemap: ${SITE_URL}/sitemap.xml
 `);
 });
 
-app.get('/sitemap.xml', (_req, res) => {
+// ---- sitemap helpers ----
+function buildUrlset() {
   // Only hand-written posts are submitted to Google. Crawled articles
   // (source_url NOT NULL) stay visible on the site but are excluded from the
   // sitemap and marked noindex — duplicate content must not enter the index.
@@ -62,34 +63,30 @@ app.get('/sitemap.xml', (_req, res) => {
       lastmod: (p.updated_at || p.published_at || '').slice(0, 10)
     });
   }
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`).join('\n')}
 </urlset>`;
+}
+
+app.get('/sitemap.xml', (_req, res) => {
+  res.type('application/xml').send(buildUrlset());
+});
+
+// A REAL sitemap index: filenames containing "index" are parsed by Google as
+// <sitemapindex> documents, so this endpoint returns proper index format.
+app.get('/sitemap_index.xml', (_req, res) => {
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap><loc>${SITE_URL}/sitemap.xml</loc><lastmod>${new Date().toISOString().slice(0, 10)}</lastmod></sitemap>
+</sitemapindex>`;
   res.type('application/xml').send(xml);
 });
 
-// alias so a fresh sitemap URL can be submitted to Search Console
-// (GSC never retries a "Couldn't fetch" entry; a new URL triggers a new fetch)
-app.get('/sitemap_index.xml', (_req, res) => {
-  const posts = db.prepare(
-    "SELECT slug, published_at, updated_at FROM posts WHERE status='published' AND (source_url IS NULL OR source_url = '') ORDER BY published_at DESC"
-  ).all();
-  const cats = db.prepare('SELECT slug FROM categories ORDER BY sort_order').all();
-  const urls = [];
-  urls.push({ loc: `${SITE_URL}/`, lastmod: new Date().toISOString().slice(0, 10) });
-  for (const c of cats) urls.push({ loc: `${SITE_URL}/category/${c.slug}`, lastmod: new Date().toISOString().slice(0, 10) });
-  for (const p of posts) {
-    urls.push({
-      loc: `${SITE_URL}/post/${p.slug}`,
-      lastmod: (p.updated_at || p.published_at || '').slice(0, 10)
-    });
-  }
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map(u => `  <url><loc>${u.loc}</loc>${u.lastmod ? `<lastmod>${u.lastmod}</lastmod>` : ''}</url>`).join('\n')}
-</urlset>`;
-  res.type('application/xml').send(xml);
+// Fresh URL name (plain urlset) to submit to Search Console when previous
+// entries are stuck — a brand-new URL always triggers a new fetch.
+app.get('/news-sitemap.xml', (_req, res) => {
+  res.type('application/xml').send(buildUrlset());
 });
 
 /* ---------- server-side SEO head injection ----------
@@ -142,10 +139,20 @@ function injectSeo(html, head) {
 }
 function seoForPost(post, category) {
   const siteName = (db.prepare('SELECT value FROM settings WHERE key = ?').get('site_name') || {}).value || 'News';
+  // excerpt falls back to a plain-text slice of the body when empty
+  let desc = (post.excerpt || '').replace(/\s+/g, ' ').trim();
+  if (!desc && post.content_md) {
+    desc = post.content_md
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+      .replace(/[#*_>`~-]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 160);
+  }
   return {
     title: post.title,
     siteName,
-    description: (post.excerpt || '').replace(/\s+/g, ' ').trim(),
+    description: desc,
     image: post.cover_image,
     url: `/post/${post.slug}`,
     type: 'article',
@@ -153,7 +160,7 @@ function seoForPost(post, category) {
       '@context': 'https://schema.org',
       '@type': 'NewsArticle',
       headline: post.title,
-      description: (post.excerpt || '').slice(0, 200),
+      description: (desc || '').slice(0, 200),
       datePublished: post.published_at,
       dateModified: post.updated_at || post.published_at,
       publisher: { '@type': 'Organization', name: siteName },
@@ -211,7 +218,7 @@ if (fs.existsSync(distDir)) {
   // compute SEO meta for article / category / home routes
   const seoByPath = new Map();
   for (const p of db.prepare(`
-    SELECT p.id, p.title, p.slug, p.excerpt, p.cover_image, p.published_at, p.updated_at, p.source_url, c.name AS category_name
+    SELECT p.id, p.title, p.slug, p.excerpt, p.content_md, p.cover_image, p.published_at, p.updated_at, p.source_url, c.name AS category_name
     FROM posts p LEFT JOIN categories c ON c.id = p.category_id
     WHERE p.status = 'published'
   `).all()) {

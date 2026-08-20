@@ -78,15 +78,19 @@ router.post('/posts', (req, res) => {
 
     const slug = uniqueSlug(b.slug || b.title);
     const published_at = b.published_at || (b.status === 'published' ? now() : null);
+    // manual posts get a realistic random view count too (matches crawled range)
+    const views = b.views !== undefined && b.views !== null && b.views !== ''
+      ? Math.max(0, parseInt(b.views, 10) || 0)
+      : 1500 + Math.floor(Math.random() * (9800 - 1500 + 1));
 
     const info = db.prepare(
       `INSERT INTO posts (title, slug, excerpt, content_md, cover_image, category_id, author_id,
-                          status, is_featured, is_top, published_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                          status, is_featured, is_top, views, published_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).run(
       b.title.trim(), slug, b.excerpt || '', b.content_md || '', b.cover_image || '',
       b.category_id || null, b.author_id || req.user.id, b.status || 'draft',
-      b.is_featured ? 1 : 0, b.is_top ? 1 : 0, published_at
+      b.is_featured ? 1 : 0, b.is_top ? 1 : 0, views, published_at
     );
 
     setPostTags(info.lastInsertRowid, parseTags(b.tags));
@@ -111,10 +115,13 @@ router.put('/posts/:id', (req, res) => {
     if (b.status === 'published' && !existing.published_at && !b.published_at) {
       published_at = now();
     }
+    const views = b.views !== undefined && b.views !== null && b.views !== ''
+      ? Math.max(0, parseInt(b.views, 10) || 0)
+      : existing.views;
 
     db.prepare(
       `UPDATE posts SET title=?, slug=?, excerpt=?, content_md=?, cover_image=?, category_id=?,
-              status=?, is_featured=?, is_top=?, published_at=?, updated_at=?
+              status=?, is_featured=?, is_top=?, views=?, published_at=?, updated_at=?
        WHERE id=?`
     ).run(
       title, slug,
@@ -125,7 +132,7 @@ router.put('/posts/:id', (req, res) => {
       b.status !== undefined ? b.status : existing.status,
       b.is_featured !== undefined ? (b.is_featured ? 1 : 0) : existing.is_featured,
       b.is_top !== undefined ? (b.is_top ? 1 : 0) : existing.is_top,
-      published_at, now(), id
+      views, published_at, now(), id
     );
 
     if (b.tags !== undefined) setPostTags(id, parseTags(b.tags));
